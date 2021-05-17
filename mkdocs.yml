@@ -1,1 +1,4 @@
-site_name: My Docs
+site_name: MoyWiki
+pages:
+- [index.md, Home]
+- [about.md, About]
