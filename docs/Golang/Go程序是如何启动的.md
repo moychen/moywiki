@@ -1,5 +1,13 @@
 # Go程序是如何启动的
 
+需要知识：
+
+dlv
+
+elf
+
+
+
 ## 理解可执行文件
 
 ### 程序构建过程
@@ -50,7 +58,7 @@ rm -r $WORK/b001/
 
 ```mermaid
 graph LR;
-    解析ELF-Header --> 加载二进制文件内容至内存 --> 从entry-point开始执行代码;
+解析ELF-Header --> 加载二进制文件内容至内存 --> 从entry-point开始执行代码;
 ```
 
 ## Go进程的启动和初始化
@@ -78,6 +86,20 @@ go build 生成可执行文件demo，然后通过readelf -h demo找到可执行�
 
 ![image-20210520211303257](images/Go程序是如何启动的/image-20210520211303257.png)
 
+从上图的结果来看go启动流程大致为：
+
+```mermaid
+graph TD;
+_rt0_amd64_linux --> _rt0_amd64 --> runtime.rt0_go; 
+```
+
+runtime.rt0_go中主要工作有：
+
+```mermaid
+graph LR;
+argc/argv处理 --> 全局m0/g0初始化 --> 获取cpu核心数 --> 初始化内部数据结构 --> 开始执行main函数;
+```
+
 ## 调度组件与调度循环
 
 **G（goroutine）**：⼀个计算任务。由需要执⾏的代码和其上下⽂组成，上下⽂包括：当前代码位置、栈顶、栈底地址、状态等。
@@ -86,9 +108,68 @@ go build 生成可执行文件demo，然后通过readelf -h demo找到可执行�
 
 **P（processor）**：虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷⼊休眠（后台监控线程除外），你也可以将其理解为⼀种 token，有这个 token，才有在物理 CPU 核心上执行的权利。
 
+### 调度流程
+
+Go的调度流程实际上是一个生产-消费流程，当我们新增一个go routine的时候实际上是向runtime 调度组件中新增一个task。
+
+![image-20210521163354177](images/Go程序是如何启动的/image-20210521163354177.png)
+
+### 生产者
+
+<img src="images/Go程序是如何启动的/image-20210521165029181.png" alt="image-20210521165029181" style="zoom:67%;" />
+
+### 消费者
+
+![image-20210521165214744](images/Go程序是如何启动的/image-20210521165214744.png)
+
+> * M 执⾏调度循环时，必须与⼀个 P 绑定
+> * Work stealing 就是说的 runqsteal -> runqgrab 这个流程
+
+<img src="images/Go程序是如何启动的/image-20210521165441266.png" alt="image-20210521165441266" style="zoom: 50%;" />
+
 ## 处理阻塞
 
-## 调度器的发展历史
+Go中阻塞大概有这么几种场景：
+
+> * channel send/recv
+> * sleep
+> * select
+> * lock
+> * 网络IO
+
+当上述阻塞场景之一发生时，Go会将该goroutine挂起，不会阻塞Go的调度流程。挂起指的是调度组件会将该goroutine放入等待队列，待可执行时，待ready后再继续执行，不会占用线程。
+
+### 可拦截的阻塞
+
+#### channel send/recv
+
+
+
+#### time.Sleep
+
+#### select
+
+#### lock
+
+#### 网络IO
+
+### 不可拦截的阻塞
+
+> * cgo
+> * syscall 系统调用
+> * ⻓时间运⾏需要剥离 P 执⾏
+
+### sysmon
+
+sysmon是runtime中的system monitor，具有高优先级，在专有线程中执行，并且不需要绑定P。
+
+checkdead：常见误解—这个可以检查死锁
+
+netpoll：inject g list to global run queue
+
+retake：如果syscall卡了很久，就把剥离（handoff p）
+
+​				如果用户g运行很久，那么发信号SIGURG抢占
 
 ## 与调度有关的常见问题
 
