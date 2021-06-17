@@ -1,4 +1,4 @@
-Go语言调试
+# Go语言调试
 
 ## delve (dlv)
 
@@ -221,8 +221,6 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 | [next](#next)                         | 跳转到下一个代码行                                           |
 | [rebuild](#rebuild)                   | 重新构建目标可执行文件并重新启动它。如果该可执行文件不是由delve构建的，它就不起作用 |
 | [restart](#restart)                   | 重启进程                                                     |
-| [rev](#rev)                           | Reverses the execution of the target program for the command specified. |
-| [rewind](#rewind)                     | 向后运行直到断点或程序终止                                   |
 | [step](#step)                         | 单步调试                                                     |
 | [step-instruction](#step-instruction) | 单步调试CPU指令                                              |
 | [stepout](#stepout)                   | 跳出当前函数                                                 |
@@ -266,13 +264,13 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 
 #### 查看调用堆栈和选择栈帧
 
-| Command               | Description                                         |
-| --------------------- | --------------------------------------------------- |
-| [deferred](#deferred) | Executes command in the context of a deferred call. |
-| [down](#down)         | 将当前帧向下移动                                    |
-| [frame](#frame)       | 设置当前帧，或在不同的帧上执行命令                  |
-| [stack](#stack)       | 打印堆栈记录                                        |
-| [up](#up)             | 将当前帧向上移动                                    |
+| Command               | Description                        |
+| --------------------- | ---------------------------------- |
+| [deferred](#deferred) | 在一个延迟调用的上下文中执行命令。 |
+| [down](#down)         | 将当前帧向下移动                   |
+| [frame](#frame)       | 设置当前帧，或在不同的帧上执行命令 |
+| [stack](#stack)       | 打印堆栈记录                       |
+| [up](#up)             | 将当前帧向上移动                   |
 
 #### 其他命令
 
@@ -323,66 +321,70 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 #### call
 
 恢复进程，注入一个函数调用（实验性的！！！）
-	call [-unsafe] <function call expression>
+
+```
+call [-unsafe] <function call expression>
+```
 
 当前限制:
-- only pointers to stack-allocated objects can be passed as argument.
-- only some automatic type conversions are supported.
+- 只有指向栈分配的对象的指针可以作为参数传递。
+- 只支持一些自动类型转换。
 - functions can only be called on running goroutines that are not
   executing the runtime.
-- the current goroutine needs to have at least 256 bytes of free space on
-  the stack.
+- 当前的goroutine栈上需要有至少256字节的空闲空间。
 - functions can only be called when the goroutine is stopped at a safe
   point.
-- calling a function will resume execution of all goroutines.
-- only supported on linux's native backend.
+- 调用一个函数将恢复所有goroutine的执行。
+- 只支持Linux的本地后端.
 
 #### check
 
-Creates a checkpoint at the current position.
+在当前位置创建一个检查点。
 
 	checkpoint [note]
 
-The "note" is arbitrary text that can be used to identify the checkpoint, if it is not specified it defaults to the current filename:line position.
+”note“是任意的文本，可用于标识检查点，如果没有指明，则默认为”filename:line position”。
 
-Aliases: checkpoint
+别名: checkpoint
 
 #### checkpoints
 
-Print out info for existing checkpoints.
+打印出现有检查点的信息。
 
 #### clear
 
-Deletes breakpoint.
+删除断点。
 
 	clear <breakpoint name or id>
 
 #### clear-checkpoint
 
-Deletes checkpoint.
+删除检查点。
 
 	clear-checkpoint <id>
 
-Aliases: clearcheck
+別名: clearcheck
 
 #### clearall
 
-Deletes multiple breakpoints.
+删除多个断点。
 
 	clearall [<linespec>]
 
 If called with the linespec argument it will delete all the breakpoints matching the linespec. If linespec is omitted all breakpoints are deleted.
 
+如果调用指定linespec参数，它将删除所有与linespec匹配的断点。如果省略linespec，则所有断点都会被删除。
+
 #### condition
 
-Set breakpoint condition.
+设置断点条件。
 
 	condition <breakpoint name or id> <boolean expression>.
 	condition -hitcount <breakpoint name or id> <operator> <argument>
 
-Specifies that the breakpoint, tracepoint or watchpoint should break only if the boolean expression is true.
+指定断点、跟踪点或观察点只有在布尔表达式为真时才会命中。
 
-With the -hitcount option a condition on the breakpoint hit count can be set, the following operators are supported
+通过-hitcount选项，可以设置断点条件的命中数，支持以下运算符：
 
 	condition -hitcount bp > n
 	condition -hitcount bp >= n
@@ -392,100 +394,102 @@ With the -hitcount option a condition on the breakpoint hit count can be set, th
 	condition -hitcount bp != n
 	condition -hitcount bp % n
 
-The '% n' form means we should stop at the breakpoint when the hitcount is a multiple of n.
+“% n”形式意味着当hitcount是n的倍数时，我们应该在断点处停止。
 
-Aliases: cond
+别名: cond
 
 #### config
 
-Changes configuration parameters.
+改变配置参数。
 
 	config -list
 
-Show all configuration parameters.
+显示所有配置参数。
 
 	config -save
 
-Saves the configuration file to disk, overwriting the current configuration file.
+将配置文件保存到磁盘，覆盖当前配置文件。
 
 	config <parameter> <value>
 
-Changes the value of a configuration parameter.
+改变配置参数值。
 
 	config substitute-path <from> <to>
 	config substitute-path <from>
 
-Adds or removes a path substitution rule.
+添加或删除一个路径替换规则。
 
 	config alias <command> <alias>
 	config alias <alias>
 
-Defines <alias> as an alias to <command> or removes an alias.
+将<alias>定义为<command>的别名或删除一个别名。
 
 #### continue
 
-Run until breakpoint or program termination.
+运行至断点或程序终止。
 
 	continue [<linespec>]
 
 Optional linespec argument allows you to continue until a specific location is reached. The program will halt if a breakpoint is hit before reaching the specified location.
 
-For example:
+可选的linespec参数允许你继续执行直到到达一个特定的位置。如果在到达指定位置之前断点命中，程序将停止运行。
+
+例如:
 
 	continue main.main
 	continue encoding/json.Marshal
 
 
-Aliases: c
+别名: c
 
 #### deferred
 
-Executes command in the context of a deferred call.
+在一个延迟调用的上下文中执行命令。
 
 	deferred <n> <command>
 
-Executes the specified command (print, args, locals) in the context of the n-th deferred call in the current frame.
+在当前帧中第n个延迟调用的上下文中执行指定的命令（print, args, locals）。
 
 #### disassemble
 
-Disassembler.
+反汇编。
 
 	[goroutine <n>] [frame <m>] disassemble [-a <start> <end>] [-l <locspec>]
 
-If no argument is specified the function being executed in the selected stack frame will be executed.
+如果没有指定参数，在选定的栈帧中正在执行的函数将被反汇编。
 
-	-a <start> <end>	disassembles the specified address range
-	-l <locspec>		disassembles the specified function
+	-a <start> <end>	反汇编指定的地址范围
+	-l <locspec>		反汇编指定的函数
 
-Aliases: disass
+别名: disass
 
 #### display
 
-Print value of an expression every time the program stops.
+每次程序停止时，打印表达式的值。
 
 	display -a [%format] <expression>
 	display -d <number>
 
-The '-a' option adds an expression to the list of expression printed every time the program stops. The '-d' option removes the specified expression from the list.
+选项'-a'将一个表达式添加到每次程序停止时打印的表达式列表中。选项'-d'从列表中删除指定的表达式。
 
-If display is called without arguments it will print the value of all expression in the list.
+如果在没有参数的情况下调用display，它将打印列表中所有表达式的值。
 
 #### down
 
-Move the current frame down.
+将当前帧向下移动。
 
 	down [<m>]
 	down [<m>] <command>
 
-Move the current frame down by <m>. The second form runs the command on the given frame.
+将当前帧向下移动<m>。第二种形式是在给定的帧上运行该命令。
 
 #### dump
 
-Creates a core dump from the current process state
+从当前进程状态创建一个核心转储。
 
 	dump <output file>
 
-The core dump is always written in ELF, even on systems (windows, macOS) where this is not customary. For environments other than linux/amd64 threads and registers are dumped in a format that only Delve can read back.
+核心转储总是用ELF写的，即使是在不习惯这样做的系统上（windows, macOS）。对于linux/amd64以外的环境，线程和寄存器的转储格式只有Delve可以读回。
 
 #### edit
 
@@ -493,178 +497,179 @@ Open where you are in $DELVE_EDITOR or $EDITOR
 
 	edit [locspec]
 
-If locspec is omitted edit will open the current source file in the editor, otherwise it will open the specified location.
+如果省略locspec，edit将在编辑器中打开当前的源文件，否则它将打开指定的位置。
 
-Aliases: ed
+别名: ed
 
 #### examinemem
 
-Examine memory:
+查看内存：
 
 	examinemem [-fmt <format>] [-count|-len <count>] [-size <size>] <address>
 	examinemem [-fmt <format>] [-count|-len <count>] [-size <size>] -x <expression>
 
-Format represents the data format and the value is one of this list (default hex): bin(binary), oct(octal), dec(decimal), hex(hexadecimal), addr(address).
-Length is the number of bytes (default 1) and must be less than or equal to 1000.
-Address is the memory location of the target to examine. Please note '-len' is deprecated by '-count and -size'.
-Expression can be an integer expression or pointer value of the memory location to examine.
+Format代表数据格式，其值是这个列表中的一个（默认为十六进制）：bin（二进制），oct（八进制），dec（十进制），hex（十六进制），addr（地址）。
 
-For example:
+长度是字节数（默认为1），必须小于或等于1000。
+
+地址是要检查的目标的内存位置。请注意“-len已经被“-count”和“-size”所淘汰。
+
+表达式可以是一个整数表达式或要检查的内存位置的指针值。
+
+比如说。
 
     x -fmt hex -count 20 -size 1 0xc00008af38
     x -fmt hex -count 20 -size 1 -x 0xc00008af38 + 8
     x -fmt hex -count 20 -size 1 -x &myVar
     x -fmt hex -count 20 -size 1 -x myPtrVar
 
-Aliases: x
+别名: x
 
 #### exit
 
-Exit the debugger.	
-	exit [-c]
+退出调试。
 
-When connected to a headless instance started with the --accept-multiclient, pass -c to resume the execution of the target process before disconnecting.
+```
+exit [-c]
+```
 
-Aliases: quit q
+当连接到一个用--accept-multiclient启动的`headless`实例时，在断开连接前通过-c来恢复目标进程的执行。
+
+别名：quit q
 
 #### frame
 
-Set the current frame, or execute command on a different frame.
+设置当前帧，或在不同的帧上执行命令。
 
-	frame <m>
-	frame <m> <command>
-
-The first form sets frame used by subsequent commands such as "print" or "set".
-The second form runs the command on the given frame.
+	frame <m>					# 设置帧
+	frame <m> <command>			# 在给定帧上执行命令
 
 #### funcs
 
-Print list of functions.
+打印函数列表
 
 	funcs [<regex>]
 
-If regex is specified only the functions matching it will be returned.
+如果指定了regex，只有与之匹配的函数才会被返回。
 
 #### goroutine
 
-Shows or changes current goroutine
+显示或改变当前的Goroutine。
 
 	goroutine
 	goroutine <id>
 	goroutine <id> <command>
 
-Called without arguments it will show information about the current goroutine.
-Called with a single argument it will switch to the specified goroutine.
-Called with more arguments it will execute a command on the specified goroutine.
+在没有参数的情况下调用，它将显示关于当前goroutine的信息。
+用一个参数调用，它将切换到指定的goroutine。
+用更多的参数调用，它将在指定的goroutine上执行一个命令。
 
-Aliases: gr
+别名：gr
 
 #### goroutines
 
-List program goroutines.
+列出程序goroutines。
 
 	goroutines [-u (default: user location)|-r (runtime location)|-g (go statement location)|-s (start location)] [-t (stack trace)] [-l (labels)]
 
-Print out info for every goroutine. The flag controls what information is shown along with each goroutine:
+打印出每个goroutine的信息。该标志控制了每个goroutine所显示的信息：
 
-	-u	displays location of topmost stackframe in user code
-	-r	displays location of topmost stackframe (including frames inside private runtime functions)
-	-g	displays location of go instruction that created the goroutine
-	-s	displays location of the start function
-	-t	displays goroutine's stacktrace
-	-l	displays goroutine's labels
+	-u	显示用户代码中最顶层栈帧的位置
+	-r	显示最顶层的栈帧的位置 (包括私有运行时函数内部的帧)
+	-g	显示创建goroutine的go指令的位置
+	-s	显示函数开始的位置
+	-t	显示goroutine的堆栈跟踪记录
+	-l	显示goroutine的标签
 
-If no flag is specified the default is -u.
+如果没有指定标志，默认为-u。
 
-Aliases: grs
+别名：grs
 
 #### help
 
-Prints the help message.
+打印帮助信息。
 
 	help [command]
 
-Type "help" followed by the name of a command for more information about it.
-
-Aliases: h
+键入 "help"，并加上命令名，以获得更多相关信息。
 
 #### libraries
 
-List loaded dynamic libraries
+列出已加载的动态库。
 
 #### list
 
-Show source code.
+查看源码。
 
 	[goroutine <n>] [frame <m>] list [<linespec>]
 
-Show source around current point or provided linespec.
+显示当前执行点或提供的linespec周围的源码。
 
-For example:
+比如:
 
 	frame 1 list 69
 	list testvariables.go:10000
 	list main.main:30
 	list 40
 
-Aliases: ls l
+别名: ls l
 
 #### locals
 
-Print local variables.
+打印局部变量。
 
 	[goroutine <n>] [frame <m>] locals [-v] [<regex>]
 
 The name of variables that are shadowed in the current scope will be shown in parenthesis.
 
-If regex is specified only local variables with a name matching it will be returned. If -v is specified more information about each local variable will be shown.
+如果指定了regex，只有名称与之匹配的局部变量才会被返回。如果指定了-v，将显示每个局部变量的更多信息。
 
 #### next
 
-Step over to next source line.
+走到下一个代码行。
 
 	next [count]
 
-Optional [count] argument allows you to skip multiple lines.
+可选的[count]参数允许跳过多行。
 
 
-Aliases: n
+别名：n
 
 #### on
 
-Executes a command when a breakpoint is hit.
+当断点命中，执行一个命令。
 
 	on <breakpoint name or id> <command>.
 
-Supported commands: print, stack and goroutine)
+支持的命令：（print、stack and goroutine）
 
 #### print
 
-Evaluate an expression.
+打印表达式值
 
 	[goroutine <n>] [frame <m>] print [%format] <expression>
 
-See [Documentation/cli/expr.md](//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md) for a description of supported expressions.
+关于支持的表达式的描述，请参见[Documentation/cli/expr.md](https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md)。
 
-The optional format argument is a format specifier, like the ones used by the fmt package. For example "print %x v" will print v as an hexadecimal number.
+可选的`format`参数是一个格式指定符，就像`fmt`包所使用的那样。例如，"print %x v "将把v打印成一个十六进制的数字。
 
-Aliases: p
+别名：p
 
 #### rebuild
 
-Rebuild the target executable and restarts it. It does not work if the executable was not built by delve.
+重建目标可执行文件并重新启动它。如果该可执行文件不是由delve构建的，它就不起作用。
 
 #### regs
 
-Print contents of CPU registers.
+打印CPU寄存器的内容。
 
 	regs [-a]
 
-Argument -a shows more registers. Individual registers can also be displayed by 'print' and 'display'. See [Documentation/cli/expr.md.](//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md.)
+参数-a显示更多的寄存器。单个寄存器也可以通过“print”和“display”来显示。参见[Documentation/cli/expr.md.](//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md.)
 
 #### restart
 
-Restart process.
+重启进程。
 
 For recorded targets the command takes the following forms:
 
@@ -676,58 +681,47 @@ For live targets the command takes the following forms:
 
 	restart [newargv...] [redirects...]	restarts the process
 
-If newargv is omitted the process is restarted (or re-recorded) with the same argument vector.
-If -noargs is specified instead, the argument vector is cleared.
+如果省略newargv，进程将以相同的参数向量重新启动（或重新记录）。
+如果指定了-noargs，则参数向量被清除。
 
-A list of file redirections can be specified after the new argument list to override the redirections defined using the '--redirect' command line option. A syntax similar to Unix shells is used:
+可以在新的参数列表后指定一个文件重定向列表，以覆盖使用"--重定向 "命令行选项定义的重定向。使用的是类似于Unix shells的语法。    
 
 	<input.txt	redirects the standard input of the target process from input.txt
 	>output.txt	redirects the standard output of the target process to output.txt
 	2>error.txt	redirects the standard error of the target process to error.txt
 
 
-Aliases: r
-
-#### rev
-
-Reverses the execution of the target program for the command specified.
-Currently, only the rev step-instruction command is supported.
-
-#### rewind
-
-Run backwards until breakpoint or program termination.
-
-Aliases: rw
+别名：r
 
 #### set
 
-Changes the value of a variable.
+改变变量的值。
 
 	[goroutine <n>] [frame <m>] set <variable> = <value>
 
-See [Documentation/cli/expr.md](//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md) for a description of supported expressions. Only numerical variables and pointers can be changed.
+关于支持的表达式的描述，请参见[Documentation/cli/expr.md](https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md)。只有数字型变量和指针可以被改变。
 
 #### source
 
-Executes a file containing a list of delve commands
+执行一个包含delve命令列表的文件。
 
 	source <path>
 
-If path ends with the .star extension it will be interpreted as a starlark script. See [Documentation/cli/starlark.md](//github.com/go-delve/delve/tree/master/Documentation/cli/starlark.md) for the syntax.
+如果`path`以.star扩展名结尾，它将被解释为一个starlark脚本。语法见 [Documentation/cli/starlark.md](//github.com/go-delve/telve/master/Documentation/cli/starlark.md)。
 
-If path is a single '-' character an interactive starlark interpreter will start instead. Type 'exit' to exit.
+如果`path`是一个单一的’-‘字符，一个交互式的starlark解释器将被启动。键入”exit“来退出。
 
 #### sources
 
-Print list of source files.
+打印源文件的清单。
 
 	sources [<regex>]
 
-If regex is specified only the source files matching it will be returned.
+如果指定了regex，只有与之匹配的源文件才会被返回。
 
 #### stack
 
-Print stack trace.
+打印堆栈跟踪。
 
 	[goroutine <n>] [frame <m>] stack [<depth>] [-full] [-offsets] [-defer] [-a <n>] [-adepth <depth>] [-mode <mode>]
 	
@@ -742,41 +736,41 @@ Print stack trace.
 			fromg	- starts from the registers stored in the runtime.g struct
 
 
-Aliases: bt
+别名：bt
 
 #### step
 
-Single step through program.
+单步执行程序
 
-Aliases: s
+别名：s
 
 #### step-instruction
 
-Single step a single cpu instruction.
+单步执行cpu指令
 
-Aliases: si
+别名：si
 
 #### stepout
 
-Step out of the current function.
+走出当前函数
 
-Aliases: so
+别名：so
 
 #### thread
 
-Switch to the specified thread.
+切换到指定的线程。
 
 	thread <id>
 
-Aliases: tr
+别名：tr
 
 #### threads
 
-Print out info for every traced thread.
+打印出每个被追踪线程的信息。
 
 #### toggle
 
-Toggles on or off a breakpoint.
+打开或关闭一个断点。
 
 ```
 toggle <breakpoint name or id>
@@ -784,61 +778,62 @@ toggle <breakpoint name or id>
 
 #### trace
 
-Set tracepoint.
+设置跟踪点。
 
 	trace [name] <linespec>
 
-A tracepoint is a breakpoint that does not stop the execution of the program, instead when the tracepoint is hit a notification is displayed. See [Documentation/cli/locspec.md](//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md) for the syntax of linespec.
+跟踪点是一个不会停止程序执行的断点，相反，当跟踪点被击中时，会显示一个通知。请参阅[Documentation/cli/locspec.md](//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md)了解linespec的语法。
 
-See also: "help on", "help cond" and "help clear"
+也请参见: "help on", "help cond" and "help clear"
 
-Aliases: t
+别名：t
 
 #### types
 
-Print list of types
+打印类型列表。
 
 	types [<regex>]
 
-If regex is specified only the types matching it will be returned.
+如果指定了regex，只有与之匹配的类型才会被返回。
 
 #### up
 
-Move the current frame up.
+将当前帧向上移动。
 
-	up [<m>]
-	up [<m>] <command>
-
-Move the current frame up by <m>. The second form runs the command on the given frame.
+	up [<m>]				# 将当前帧向上移动<m>
+	up [<m>] <command>		# 在给定的帧上运行该命令
 
 #### vars
 
-Print package variables.
+打印包变量。
 
 	vars [-v] [<regex>]
 
-If regex is specified only package variables with a name matching it will be returned. If -v is specified more information about each package variable will be shown.
+如果指定了regex，只有名称与之匹配的包变量才会被返回。如果指定了-v，将显示关于每个包变量的更多信息。
 
 #### watch
 
-Set watchpoint.
-	watch [-r|-w|-rw] <expr>
-	
-	-r	stops when the memory location is read
-	-w	stops when the memory location is written
-	-rw	stops when the memory location is read or written
+设置观察点。
 
-The memory location is specified with the same expression language used by 'print', for example:
+```
+watch [-r|-w|-rw] <expr>
+
+-r	当内存位置被读取时停止
+-w	当内存位置被写入时停止
+-rw	当内存位置被读取或写入时停止
+```
+
+内存位置是与'print'所使用的表达式语言一样来指定的，例如：
 
 	watch v
 
-will watch the address of variable 'v'.
+将观察变量”v“的地址。
 
-See also: "help print".
+参考: "help print".
 
 #### whatis
 
-Prints type of an expression.
+打印表达式的类型。
 
 	whatis <expression>
 
