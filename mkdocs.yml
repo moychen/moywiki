@@ -66,9 +66,11 @@ nav:
     - Home: index.md
     - Language:
       - C/C++: 
+      - C/C++: 
             Malloc Internals: CC++/MallocInternals.md
       - Golang: 
             Go程序是如何启动的: Golang/Go程序是如何启动的.md
+            Go语言调试：Go语言调试.md
     - About: about.md
 
 
