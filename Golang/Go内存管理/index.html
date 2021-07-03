@@ -11,21 +11,21 @@
         <meta name="author" content="moychen">
       
       
-        <link rel="canonical" href="https://moychen.github.io/moywiki/about/">
+        <link rel="canonical" href="https://moychen.github.io/moywiki/Golang/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
       
-      <link rel="icon" href="../img/favicon.ico">
+      <link rel="icon" href="../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
-        <title>About - MoyWiki</title>
+        <title>Go内存管理 - MoyWiki</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bde7dde4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
         
       
     
@@ -57,7 +57,7 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
-    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
       <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
@@ -67,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#moywiki" class="md-skip">
+        <a href="#go" class="md-skip">
           跳转至
         </a>
       
@@ -78,7 +78,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="MoyWiki" class="md-header__button md-logo" aria-label="MoyWiki" data-md-component="logo">
+    <a href="../.." title="MoyWiki" class="md-header__button md-logo" aria-label="MoyWiki" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -97,7 +97,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              About
+              Go内存管理
             
           </span>
         </div>
@@ -190,7 +190,7 @@
 
 
   <li class="md-tabs__item">
-    <a href=".." class="md-tabs__link">
+    <a href="../.." class="md-tabs__link">
       Home
     </a>
   </li>
@@ -210,7 +210,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CC%2B%2B/MallocInternals/" class="md-tabs__link">
+      <a href="../../CC%2B%2B/MallocInternals/" class="md-tabs__link">
         Language
       </a>
     </li>
@@ -222,12 +222,10 @@
         
   
   
-    
-  
 
 
   <li class="md-tabs__item">
-    <a href="./" class="md-tabs__link md-tabs__link--active">
+    <a href="../../about/" class="md-tabs__link">
       About
     </a>
   </li>
@@ -253,7 +251,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="MoyWiki" class="md-nav__button md-logo" aria-label="MoyWiki" data-md-component="logo">
+    <a href="../.." title="MoyWiki" class="md-nav__button md-logo" aria-label="MoyWiki" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -285,7 +283,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -344,7 +342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CC%2B%2B/MallocInternals/" class="md-nav__link">
+      <a href="../../CC%2B%2B/MallocInternals/" class="md-nav__link">
         Malloc Internals
       </a>
     </li>
@@ -385,7 +383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Golang/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/" class="md-nav__link">
+      <a href="../Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/" class="md-nav__link">
         Go程序是如何启动的
       </a>
     </li>
@@ -397,7 +395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-nav__link">
+      <a href="../Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-nav__link">
         Go语言调试
       </a>
     </li>
@@ -422,21 +420,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
         About
       </a>
-      
     </li>
   
 
@@ -460,6 +448,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    内存分配
+  </a>
+  
+    <nav class="md-nav" aria-label="内存分配">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    基本概念
+  </a>
+  
+    <nav class="md-nav" aria-label="基本概念">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    逃逸分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    垃圾回收
+  </a>
+  
+    <nav class="md-nav" aria-label="垃圾回收">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gc" class="md-nav__link">
+    gc算法
+  </a>
+  
+    <nav class="md-nav" aria-label="gc算法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    标记-清除
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-_1" class="md-nav__link">
+    标记-压缩（整理）
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    复制式回收
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    分代式回收
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    引用计数
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -471,7 +561,55 @@
               
                 
                 
-                <h1 id="moywiki">MoyWiki<a class="headerlink" href="#moywiki" title="Permanent link">&para;</a></h1>
+                <h1 id="go">Go内存管理<a class="headerlink" href="#go" title="Permanent link">&para;</a></h1>
+<h2 id="_1">内存分配<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">基本概念<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<h4 id="_3">逃逸分析<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<h2 id="_4">垃圾回收<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="gc">gc算法<a class="headerlink" href="#gc" title="Permanent link">&para;</a></h3>
+<p>原文地址：<strong><a href="https://zhuanlan.zhihu.com/p/338200412?utm_source=ZHShareTargetIDMore&amp;utm_medium=social&amp;utm_oi=710816085917569024">https://zhuanlan.zhihu.com/p/338200412?utm_source=ZHShareTargetIDMore&amp;utm_medium=social&amp;utm_oi=710816085917569024</a></strong></p>
+<p>程序中用的到的数据，一定是从栈、数据段这些地方追踪得到的数据。也就是说可以从这些地方直接追踪到的变量作为根节点，可以追踪到数据范围大于等于真正的有用数据。虽然追踪到不表示后面一定会用到，但是追踪不到就一定不会用到，即是无用的垃圾。所以目前主流的垃圾回收算法，都是使用数据“可达性”近似等价于数据有用性的。</p>
+<p>STW（stop the world）</p>
+<h4 id="-">标记-清除<a class="headerlink" href="#-" title="Permanent link">&para;</a></h4>
+<p>标记的过程需要扫描数据段和栈上的数据，把能够直接追踪到的数据作为root，基于这些root进一步追踪，把能追踪到的数据都进行标记，那剩下的没追踪到的就是垃圾了。</p>
+<p>**三色抽象**可以清晰的展现追踪过程中数据标记的变化：</p>
+<p>（1）垃圾回收开始会把所有数据都标记为白色；</p>
+<p>（2）然后把直接追踪到的root节点都标记为灰色，灰色代表基于当前节点展开的追踪还未完成；</p>
+<p>（3）当基于某个节点的追踪任务完成后，便会把该节点标记为黑色，表示它是有用数据，而且无需基于它再次进行追踪了。</p>
+<p>（4）当没有灰色节点时，就意味着标记工作可以结束了。此时有用数据都为黑色，垃圾都为白色，在清除阶段回收这些白色的垃圾即可。</p>
+<p><img alt="img" src="../images/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/v2-c14a9c99f085b1d2b8b8a12efcb81858_b.webp" /></p>
+<p>标记清除算法实现起来相对简单，但是比较容易造成内存碎片化，而碎片化会影响内存分配与程序执行的效率。</p>
+<p>这一问题，可以配合相应的内存管理模型来缓解。例如Tcmalloc内存管理模型这样，把内存块分成不同的规格进行统一管理，可以很好的应对碎片化问题。还有人提出了标记——压缩（整理）算法。</p>
+<p>BiBOP（Big back of pages）</p>
+<p><strong>弱三色不变式</strong></p>
+<p><strong>强三色不变式</strong></p>
+<p><strong>读写屏障</strong></p>
+<p>写屏障会在写操作中插入指令，目的就是把数据修改通知垃圾回收器，所以写屏障通常都有一个记录集。</p>
+<h4 id="-_1">标记-压缩（整理）<a class="headerlink" href="#-_1" title="Permanent link">&para;</a></h4>
+<p>标记——压缩算法的标记阶段与标记——清除算法相同，不同的是，它会在完成标记工作后对堆内存的使用进行压缩。所谓的压缩，就是移动非垃圾数据，使它们尽可能紧凑的放在内存中。</p>
+<p><img src="images/Go内存管理/v2-1bddf96b1b8561d51616aaa668d165e9_720w.jpg" alt="img" style="zoom: 33%;" /></p>
+<p>虽然标记—压缩算法有效解决了内存碎片化的问题，但是带来的多次扫描与移动开销也不容小觑。</p>
+<p>标记—压缩算法比较鲜明的特点便是它会移动数据来减少碎片化，还有一种复制式回收算法，也会移动数据。</p>
+<h4 id="_5">复制式回收<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<p>（1）复制式回收算法会把堆内存划分成两个相等的空间，From和To。程序执行时使用From空间；</p>
+<p>（2）垃圾回收执行时会扫描From空间，把能追踪到的数据复制到To空间。</p>
+<p>（3）当所有有用的数据都复制到To空间后，把From和To空间的角色交换一下。原来的To空间用作From，原来的From空间则可以全部回收作为新的To空间。</p>
+<p><img alt="img" src="../images/Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/v2-675c9f62bfca1bbae9a199d6ad7d4d65_b.webp" /></p>
+<p>每一轮垃圾回收都是如此，这种复制式回收也不会带来碎片化问题，而且因着使用连续的内存块，可以实现高速的内存分配。但是明显的不足之处就是只有一半的堆内存可以被使用。</p>
+<p>为了提高堆内存的使用率，通常会和其它垃圾回收算法搭配使用，只在一部分堆内存中使用复制式回收。例如在分代回收中就经常搭配使用复制式回收。</p>
+<h4 id="_6">分代式回收<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>分代回收的提出，主要是基于弱分代假说（weak generational hypothesis）：</p>
+<p><strong>“**大部分对象都在年轻时死亡</strong>”**</p>
+<p>如果我们把新创建的对象称为“新生代对象”，把经受住特定次数的垃圾回收而依然存活的对象称为“老年代对象”。</p>
+<p>基于弱分代假说，新生代对象成为垃圾的概率高于老年代对象，所以可以把数据划分为新生代和老年代，降低老年代执行垃圾回收的频率。</p>
+<p>对于标记、复制式等追踪类回收算法而言，不用每次都扫描所有数据，将明显提升垃圾回收执行的效率，而且新生代和老年代还可以分别采用不同的回收策略，进一步提升回收效益并减少开销。</p>
+<p>分代回收算法大多通过复制式回收来处理新生代对象，只有经历过一定次数的垃圾回收还能依然存活的新生代对象才会被晋升为老年代对象。虽然分代回收算法将回收的注意力主要集中在新生代对象上，但是考虑到老年代到新生代的引用，也依然做不到只扫描新生代就把回收工作完成的地步。</p>
+<p>到目前为止我们介绍的多为追踪式回收，都需要在执行垃圾回收时扫描数据识别垃圾对象，而引用计数式垃圾回收有所不同。</p>
+<h4 id="_7">引用计数<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<p>引用计数指的是一个数据对象被引用的次数，程序执行过程中会更新对象及其子对象的引用计数。当引用计数更新到0时，就表示这个对象不再有用，可以回收它占用的内存了。</p>
+<p>所以，引用计数法不用专门执行扫描任务，因为垃圾识别的任务已经分摊到每一次对数据对象的操作中了。</p>
+<p>这样说起来简单，但实现起来却并不容易。虽然引用计数法可以及时回收无用内存，但是高频率的更新引用计数也会造成不小的开销。而且还要专门想办法识别循环引用的情况，因为循环引用会导致引用计数无法更新到0，造成对应的内存无法被回收的情况。</p>
+<p><img src="images/Go内存管理/v2-c6f834936ade78a9f16e16fc0f30ae99_720w.jpg" alt="img" style="zoom:50%;" /></p>
                 
               
               
@@ -487,25 +625,6 @@
       
         
 <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        <a href="../Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-footer__link md-footer__link--prev" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                上一页
-              </span>
-              Go语言调试
-            </div>
-          </div>
-        </a>
-      
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -530,10 +649,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
     
   </body>

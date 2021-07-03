@@ -1,0 +1,2542 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <meta name="author" content="moychen">
+      
+      
+        <link rel="canonical" href="https://moychen.github.io/moywiki/Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/">
+      
+      <link rel="icon" href="../../img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+    
+    
+      
+        <title>Go语言调试 - MoyWiki</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#go" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MoyWiki" class="md-header__button md-logo" aria-label="MoyWiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MoyWiki
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Go语言调试
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2m10-3a5 5 0 0 1 5 5 5 5 0 0 1-5 5H7a5 5 0 0 1-5-5 5 5 0 0 1 5-5h10M7 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3h10a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="red" type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    moychen/moywiki
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../CC%2B%2B/MallocInternals/" class="md-tabs__link md-tabs__link--active">
+        Language
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../about/" class="md-tabs__link">
+      About
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MoyWiki" class="md-nav__button md-logo" aria-label="MoyWiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    MoyWiki
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    moychen/moywiki
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      <label class="md-nav__link" for="__nav_2">
+        Language
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Language" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Language
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        C/C++
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="C/C++" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          C/C++
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CC%2B%2B/MallocInternals/" class="md-nav__link">
+        Malloc Internals
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" checked>
+      
+      <label class="md-nav__link" for="__nav_2_2">
+        Golang
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Golang" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Golang
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/" class="md-nav__link">
+        Go程序是如何启动的
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Go语言调试
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Go语言调试
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#delve-dlv" class="md-nav__link">
+    delve (dlv)
+  </a>
+  
+    <nav class="md-nav" aria-label="delve (dlv)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlv" class="md-nav__link">
+    dlv简介
+  </a>
+  
+    <nav class="md-nav" aria-label="dlv简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlv-attach" class="md-nav__link">
+    dlv attach
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-exec" class="md-nav__link">
+    dlv exec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-debug" class="md-nav__link">
+    dlv debug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-test" class="md-nav__link">
+    dlv test
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    开始使用
+  </a>
+  
+    <nav class="md-nav" aria-label="开始使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main" class="md-nav__link">
+    调试main包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    调试测试程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    调试编译器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    配置和历史命令
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    调试命令
+  </a>
+  
+    <nav class="md-nav" aria-label="调试命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    运行程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    操作断点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    查看程序变量和内存
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutine" class="md-nav__link">
+    查看和切换goroutine和线程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    查看调用堆栈和选择栈帧
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    其他命令
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#args" class="md-nav__link">
+    args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#break" class="md-nav__link">
+    break
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    breakpoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check" class="md-nav__link">
+    check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoints" class="md-nav__link">
+    checkpoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    clear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear-checkpoint" class="md-nav__link">
+    clear-checkpoint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearall" class="md-nav__link">
+    clearall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition" class="md-nav__link">
+    condition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continue" class="md-nav__link">
+    continue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred" class="md-nav__link">
+    deferred
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disassemble" class="md-nav__link">
+    disassemble
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#display" class="md-nav__link">
+    display
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#down" class="md-nav__link">
+    down
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump" class="md-nav__link">
+    dump
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit" class="md-nav__link">
+    edit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examinemem" class="md-nav__link">
+    examinemem
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit" class="md-nav__link">
+    exit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frame" class="md-nav__link">
+    frame
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funcs" class="md-nav__link">
+    funcs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutine_1" class="md-nav__link">
+    goroutine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutines" class="md-nav__link">
+    goroutines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help" class="md-nav__link">
+    help
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libraries" class="md-nav__link">
+    libraries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list" class="md-nav__link">
+    list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locals" class="md-nav__link">
+    locals
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    next
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on" class="md-nav__link">
+    on
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print" class="md-nav__link">
+    print
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebuild" class="md-nav__link">
+    rebuild
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regs" class="md-nav__link">
+    regs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart" class="md-nav__link">
+    restart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    set
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source" class="md-nav__link">
+    source
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    sources
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step" class="md-nav__link">
+    step
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-instruction" class="md-nav__link">
+    step-instruction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stepout" class="md-nav__link">
+    stepout
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread" class="md-nav__link">
+    thread
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threads" class="md-nav__link">
+    threads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toggle" class="md-nav__link">
+    toggle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace" class="md-nav__link">
+    trace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#types" class="md-nav__link">
+    types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#up" class="md-nav__link">
+    up
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vars" class="md-nav__link">
+    vars
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watch" class="md-nav__link">
+    watch
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whatis" class="md-nav__link">
+    whatis
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    常见问题
+  </a>
+  
+    <nav class="md-nav" aria-label="常见问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dockerdlv" class="md-nav__link">
+    如何在docker中使用dlv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delvecli" class="md-nav__link">
+    如何使用Delve来调试CLI应用程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv_1" class="md-nav__link">
+    如何使用dlv进行远程调试
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    参考文章
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#delve-dlv" class="md-nav__link">
+    delve (dlv)
+  </a>
+  
+    <nav class="md-nav" aria-label="delve (dlv)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlv" class="md-nav__link">
+    dlv简介
+  </a>
+  
+    <nav class="md-nav" aria-label="dlv简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlv-attach" class="md-nav__link">
+    dlv attach
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-exec" class="md-nav__link">
+    dlv exec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-debug" class="md-nav__link">
+    dlv debug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv-test" class="md-nav__link">
+    dlv test
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    开始使用
+  </a>
+  
+    <nav class="md-nav" aria-label="开始使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main" class="md-nav__link">
+    调试main包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    调试测试程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    调试编译器
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    配置和历史命令
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    调试命令
+  </a>
+  
+    <nav class="md-nav" aria-label="调试命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    运行程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    操作断点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    查看程序变量和内存
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutine" class="md-nav__link">
+    查看和切换goroutine和线程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    查看调用堆栈和选择栈帧
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    其他命令
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#args" class="md-nav__link">
+    args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#break" class="md-nav__link">
+    break
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    breakpoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call" class="md-nav__link">
+    call
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check" class="md-nav__link">
+    check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoints" class="md-nav__link">
+    checkpoints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    clear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear-checkpoint" class="md-nav__link">
+    clear-checkpoint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearall" class="md-nav__link">
+    clearall
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition" class="md-nav__link">
+    condition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continue" class="md-nav__link">
+    continue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred" class="md-nav__link">
+    deferred
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disassemble" class="md-nav__link">
+    disassemble
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#display" class="md-nav__link">
+    display
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#down" class="md-nav__link">
+    down
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump" class="md-nav__link">
+    dump
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit" class="md-nav__link">
+    edit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examinemem" class="md-nav__link">
+    examinemem
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit" class="md-nav__link">
+    exit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frame" class="md-nav__link">
+    frame
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funcs" class="md-nav__link">
+    funcs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutine_1" class="md-nav__link">
+    goroutine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goroutines" class="md-nav__link">
+    goroutines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help" class="md-nav__link">
+    help
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libraries" class="md-nav__link">
+    libraries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list" class="md-nav__link">
+    list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#locals" class="md-nav__link">
+    locals
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    next
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on" class="md-nav__link">
+    on
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print" class="md-nav__link">
+    print
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebuild" class="md-nav__link">
+    rebuild
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regs" class="md-nav__link">
+    regs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart" class="md-nav__link">
+    restart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    set
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source" class="md-nav__link">
+    source
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    sources
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step" class="md-nav__link">
+    step
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-instruction" class="md-nav__link">
+    step-instruction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stepout" class="md-nav__link">
+    stepout
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread" class="md-nav__link">
+    thread
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threads" class="md-nav__link">
+    threads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toggle" class="md-nav__link">
+    toggle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace" class="md-nav__link">
+    trace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#types" class="md-nav__link">
+    types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#up" class="md-nav__link">
+    up
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vars" class="md-nav__link">
+    vars
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watch" class="md-nav__link">
+    watch
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whatis" class="md-nav__link">
+    whatis
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    常见问题
+  </a>
+  
+    <nav class="md-nav" aria-label="常见问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dockerdlv" class="md-nav__link">
+    如何在docker中使用dlv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delvecli" class="md-nav__link">
+    如何使用Delve来调试CLI应用程序
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlv_1" class="md-nav__link">
+    如何使用dlv进行远程调试
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    参考文章
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="go">Go语言调试<a class="headerlink" href="#go" title="Permanent link">&para;</a></h1>
+<h2 id="delve-dlv">delve (dlv)<a class="headerlink" href="#delve-dlv" title="Permanent link">&para;</a></h2>
+<h3 id="dlv">dlv简介<a class="headerlink" href="#dlv" title="Permanent link">&para;</a></h3>
+<p>Delve是一个用于Go程序的源码级调试器。Delve使你能够通过控制程序的执行、评估变量以及提供线程/<code>goroutine</code>状态、CPU寄存器状态等信息与你的程序进行交互。</p>
+<p>调试时可以使用<code>--</code>向你调试的程序传递可选标识，例如：</p>
+<div class="highlight"><pre><span></span><code>$ dlv <span class="nb">exec</span> ./hello -- server --config conf/config.toml
+</code></pre></div>
+<p><strong>可用命令</strong></p>
+<ul>
+<li>
+<p><a href="#dlv attach">dlv attach</a> - 附加到正在运行的进程并开始调试。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_connect.md">dlv connect</a> - 连接至<code>headless debug server</code>。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_core.md">dlv core</a> - 检查coredump文件。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md">dlv dap</a> - [实验]启动一个TCP服务器并通过DAP协议（Debug Adaptor Protocol）通信。</p>
+</li>
+<li>
+<p><a href="#dlv debug">dlv debug</a> - 编译并开始调当前目录下的main包或指定的包。</p>
+</li>
+<li>
+<p><a href="#dlv exec">dlv exec</a> - 执行可执行文件并开始调试。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_replay.md">dlv replay</a> - 回放一个rr跟踪。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_run.md">dlv run</a> - 废弃的命令，使用<code>debug</code>代替。</p>
+</li>
+<li>
+<p><a href="#dlv test">dlv test</a> - 编译测试二进制文件并开始调试程序。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_trace.md">dlv trace</a> - 编译并开始追踪程序。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_version.md">dlv version</a> - 打印版本。</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_log.md">dlv log</a> - Help about logging flags</p>
+</li>
+<li>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_backend.md">dlv backend</a> - Help about the <code>--backend</code> flag</p>
+</li>
+<li>
+<p>dlv redirect - Help about file redirection</p>
+</li>
+</ul>
+<p>使用“<code>dlv [command] --help</code>”查找关于这个命令更多的信息。</p>
+<p><strong>全局选项</strong></p>
+<div class="highlight"><pre><span></span><code>--accept-multiclient                允许一个headless server支持多个客户端连接
+--allow-non-terminal-interactive    允许没有终端的Delve的交互式会话作为stdin、stdout和stderr。
+--api-version int                   选择headless时的API版本。新客户端应该使用v2。可以通过RPCServer.SetApiVersion重置。参见Documentation/api/json-rpc/README.md。(默认为1)
+--backend string                    选择后端 (see &#39;dlv help backend&#39;). (default &quot;default&quot;)
+--build-flags string                传给编译器构建标志，例如: --build-flags=&quot;-tags=integration -mod=vendor -cover -v&quot;
+--check-go-version                  检查正在使用的Go的版本是否与Delve兼容。(默认为true)
+--disable-aslr                      禁用地址空间布局随机化（Address Space Layout Randomization）
+--headless                          只运行调试服务器，在headless模式下
+--init string                       启动文件，由终端客户端执行
+-l, --listen string                 调试服务器监听地址(默认为 &quot;127.0.0.1:0&quot;)
+--log                               启用调试服务器日志
+--log-dest string                   将日志写到指定的文件或文件描述符中（见&#39;dlv help log&#39;）
+--log-output string                 设置输出调试信息的组件，用逗号分隔（见’dlv help log‘）
+--only-same-user                    只允许来自启动此Delve实例的同一用户的连接(默认为true)
+-r, --redirect stringArray          为目标进程指定重定向规则（见&#39;dlv help redirect&#39;）
+--wd string                         运行该程序的工作目录
+</code></pre></div>
+<h4 id="dlv-attach">dlv attach<a class="headerlink" href="#dlv-attach" title="Permanent link">&para;</a></h4>
+<p>这个命令将使Delve控制一个已经运行的进程，并开始一个新的调试会话。当退出调试会话时，你可以选择让该进程继续运行或杀死它。</p>
+<div class="highlight"><pre><span></span><code>dlv attach pid [executable]
+</code></pre></div>
+<p><strong>选项</strong></p>
+<div class="highlight"><pre><span></span><code>--continue   在启动时继续进行调试进程
+</code></pre></div>
+<h4 id="dlv-exec">dlv exec<a class="headerlink" href="#dlv-exec" title="Permanent link">&para;</a></h4>
+<p>这个命令将使Delve执行二进制文件，并立即附加到进程开始一个新的调试会话。请注意，如果二进制文件在编译时没有禁用优化功能，可能很难正确地调试它。请考虑在Go 1.10或更高版本上用-gcflags="all=-N -l "编译调试二进制文件，在Go的早期版本上用-gcflags="-N -l"。</p>
+<div class="highlight"><pre><span></span><code>dlv exec &lt;path/to/binary&gt;
+</code></pre></div>
+<p><strong>选项</strong></p>
+<div class="highlight"><pre><span></span><code>--continue     在启动时继续进行调试进程
+--tty string   指定目标程序要使用的tty
+</code></pre></div>
+<h4 id="dlv-debug">dlv debug<a class="headerlink" href="#dlv-debug" title="Permanent link">&para;</a></h4>
+<p>在禁用优化的情况下编译你的程序，启动并附加到它。默认情况下，在没有参数的情况下，Delve将编译当前目录下的 "main "包，并开始调试它。或者，你可以指定一个包的名字，Delve将编译该包，并开始一个新的调试会话。</p>
+<div class="highlight"><pre><span></span><code>dlv debug [package]
+</code></pre></div>
+<p><strong>选项</strong></p>
+<div class="highlight"><pre><span></span><code>--continue        在启动时继续进行调试进程
+--output string   二进制文件的输出路径(default &quot;./__debug_bin&quot;)
+--tty string      指定目标程序要使用的tty
+</code></pre></div>
+<h4 id="dlv-test">dlv test<a class="headerlink" href="#dlv-test" title="Permanent link">&para;</a></h4>
+<p>编译一个禁用优化的测试二进制文件，并开始一个新的调试会话。</p>
+<p>test命令允许你在单元测试的背景下开始一个新的调试会话。默认情况下，Delve将调试当前目录下的测试程序。另外，你可以指定一个包的名称，Delve将在该包中调试测试程序。双破折号<code>--</code>可以用来传递参数给测试程序。</p>
+<div class="highlight"><pre><span></span><code>dlv test [package] -- -test.v -other-argument
+</code></pre></div>
+<p>另见：“go help testflag”。</p>
+<div class="highlight"><pre><span></span><code>dlv test [package]
+</code></pre></div>
+<p><strong>选项</strong></p>
+<div class="highlight"><pre><span></span><code>--output string   二进制文件的输出路径(default &quot;debug.test&quot;)
+</code></pre></div>
+<h3 id="_1">开始使用<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<h4 id="main">调试main包<a class="headerlink" href="#main" title="Permanent link">&para;</a></h4>
+<p>我们要探讨的第一个CLI子命令是<code>debug</code>。如果你和你的`main'包在同一个目录下，这个子命令可以不需要参数运行。
+否则，它需要指定包的路径。例如，基于下面这个项目的布局：</p>
+<div class="highlight"><pre><span></span><code>.
+├── github.com/me/foo
+├── cmd
+│   └── foo
+│       └── main.go
+├── pkg
+│   └── baz
+│       ├── bar.go
+│       └── bar_test.go
+</code></pre></div>
+<p>如果你当前是在目录<code>github.com/me/foo/cmd/foo</code>中，那么你可以直接在命令行执行<code>dlv debug</code>。在其他任何位置，比如项目根目录，你需要提供包名：<code>dlv debug github.com/me/foo/cmd/foo</code>。要向你的程序传递标志用<code>--</code>分开：<code>dlv debug github.com/me/foo/cmd/foo -- --arg1 value</code>。</p>
+<p>调用该命令将使Delve以最适合调试的方式编译程序。然后，它将执行并附加到程序上，并开始一个调试会话。现在，当调试会话开始时，你就处于程序初始化的最开始。为了进入一个更有用的地方你会想设置一个或两个断点，然后继续执行到该断点。</p>
+<p>例如，继续执行到你的程序的<code>main</code>函数。</p>
+<div class="highlight"><pre><span></span><code>$ dlv debug github.com/me/foo/cmd/foo
+Type <span class="s1">&#39;help&#39;</span> <span class="k">for</span> list of commands.
+<span class="o">(</span>dlv<span class="o">)</span> <span class="nb">break</span> main.main
+Breakpoint <span class="m">1</span> <span class="nb">set</span> at 0x49ecf3 <span class="k">for</span> main.main<span class="o">()</span> ./test.go:5
+<span class="o">(</span>dlv<span class="o">)</span> <span class="k">continue</span>
+&gt; main.main<span class="o">()</span> ./test.go:5 <span class="o">(</span>hits goroutine<span class="o">(</span><span class="m">1</span><span class="o">)</span>:1 total:1<span class="o">)</span> <span class="o">(</span>PC: 0x49ecf3<span class="o">)</span>
+     <span class="m">1</span>: package main
+     <span class="m">2</span>: 
+     <span class="m">3</span>: import <span class="s2">&quot;fmt&quot;</span>
+     <span class="m">4</span>: 
+<span class="o">=</span>&gt;   <span class="m">5</span>: func main<span class="o">()</span> <span class="o">{</span>
+     <span class="m">6</span>:     fmt.Println<span class="o">(</span><span class="s2">&quot;delve test&quot;</span><span class="o">)</span>
+     <span class="m">7</span>: <span class="o">}</span>
+<span class="o">(</span>dlv<span class="o">)</span> 
+</code></pre></div>
+<h4 id="_2">调试测试程序<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<p>考虑到与上面相同的目录结构，你可以通过执行你的测试套件来调试你的代码。为此，你可以使用<code>dlv test</code>子命令，它需要与<code>dlv debug</code>一样的可选包路径，如果不传递任何参数，则会构建当前目录的包。</p>
+<div class="highlight"><pre><span></span><code>$ dlv <span class="nb">test</span> github.com/me/foo/pkg/baz
+Type <span class="s1">&#39;help&#39;</span> <span class="k">for</span> list of commands.
+<span class="o">(</span>dlv<span class="o">)</span> funcs test.Test*
+/home/me/go/src/github.com/me/foo/pkg/baz/test.TestHi
+<span class="o">(</span>dlv<span class="o">)</span> <span class="nb">break</span> TestHi
+Breakpoint <span class="m">1</span> <span class="nb">set</span> at 0x536513 <span class="k">for</span> /home/me/go/src/github.com/me/foo/pkg/baz/test.TestHi<span class="o">()</span> ./test_test.go:5
+<span class="o">(</span>dlv<span class="o">)</span> <span class="k">continue</span>
+&gt; /home/me/go/src/github.com/me/foo/pkg/baz/test.TestHi<span class="o">()</span> ./bar_test.go:5 <span class="o">(</span>hits goroutine<span class="o">(</span><span class="m">5</span><span class="o">)</span>:1 total:1<span class="o">)</span> <span class="o">(</span>PC: 0x536513<span class="o">)</span>
+     <span class="m">1</span>: package baz
+     <span class="m">2</span>: 
+     <span class="m">3</span>: import <span class="s2">&quot;testing&quot;</span>
+     <span class="m">4</span>: 
+<span class="o">=</span>&gt;   <span class="m">5</span>: func TestHi<span class="o">(</span>t *testing.T<span class="o">)</span> <span class="o">{</span>
+     <span class="m">6</span>:     t.Fatal<span class="o">(</span><span class="s2">&quot;implement me!&quot;</span><span class="o">)</span>
+     <span class="m">7</span>: <span class="o">}</span>
+<span class="o">(</span>dlv<span class="o">)</span> 
+</code></pre></div>
+<p>正如你所看到的，我们开始调试测试二进制，通过<code>funcs</code>命令找到我们的测试函数。<code>funcs</code>命令找到了我们的测试函数，该命令使用一个regexp来过滤函数列表，设置一个断点，然后继续执行，直到我们命中这个断点。</p>
+<p>可以使用<code>dlv help</code>获取更多关于子命令的信息，一旦进入调试会话，你可以通过键入<code>help</code>看到所有可用的命令。
+就可以看到所有可用的命令。</p>
+<h4 id="_3">调试编译器<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<h3 id="_4">配置和历史命令<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>如果<code>$XDG_CONFIG_HOME</code>被设置，那么配置和命令历史文件就位于<code>$XDG_CONFIG_HOME/dlv</code>。否则，它们在Linux上位于<code>$HOME/.config/dlv</code>，在其他系统上位于<code>$HOME/.dlv</code>。</p>
+<p>配置文件<code>config.yml</code>包含所有可配置的选项和它们的默认值。命令历史被保存在<code>.dbg_history</code>中。</p>
+<h3 id="_5">调试命令<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h4 id="_6">运行程序<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#call">call</a></td>
+<td>恢复进程，注入一个函数调用（实验性的！！！）</td>
+</tr>
+<tr>
+<td><a href="#continue">continue</a></td>
+<td>运行到断点或程序结束</td>
+</tr>
+<tr>
+<td><a href="#next">next</a></td>
+<td>跳转到下一个代码行</td>
+</tr>
+<tr>
+<td><a href="#rebuild">rebuild</a></td>
+<td>重新构建目标可执行文件并重新启动它。如果该可执行文件不是由delve构建的，它就不起作用</td>
+</tr>
+<tr>
+<td><a href="#restart">restart</a></td>
+<td>重启进程</td>
+</tr>
+<tr>
+<td><a href="#step">step</a></td>
+<td>单步调试</td>
+</tr>
+<tr>
+<td><a href="#step-instruction">step-instruction</a></td>
+<td>单步调试CPU指令</td>
+</tr>
+<tr>
+<td><a href="#stepout">stepout</a></td>
+<td>跳出当前函数</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_7">操作断点<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#break">break</a></td>
+<td>设置断点</td>
+</tr>
+<tr>
+<td><a href="#breakpoints">breakpoints</a></td>
+<td>打印出生效断点的信息</td>
+</tr>
+<tr>
+<td><a href="#clear">clear</a></td>
+<td>删除断点</td>
+</tr>
+<tr>
+<td><a href="#clearall">clearall</a></td>
+<td>删除多个断点</td>
+</tr>
+<tr>
+<td><a href="#condition">condition</a></td>
+<td>设置断点条件</td>
+</tr>
+<tr>
+<td><a href="#on">on</a></td>
+<td>当一个断点被击中时，执行一个命令</td>
+</tr>
+<tr>
+<td><a href="#toggle">toggle</a></td>
+<td>打开或关闭一个断点</td>
+</tr>
+<tr>
+<td><a href="#trace">trace</a></td>
+<td>设置跟踪点</td>
+</tr>
+<tr>
+<td><a href="#watch">watch</a></td>
+<td>设置监控点</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_8">查看程序变量和内存<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#args">args</a></td>
+<td>打印函数参数</td>
+</tr>
+<tr>
+<td><a href="#display">display</a></td>
+<td>每次程序停止时，打印一个表达式的值</td>
+</tr>
+<tr>
+<td><a href="#examinemem">examinemem</a></td>
+<td>检查内存</td>
+</tr>
+<tr>
+<td><a href="#locals">locals</a></td>
+<td>打印本地变量</td>
+</tr>
+<tr>
+<td><a href="#print">print</a></td>
+<td>计算表达式</td>
+</tr>
+<tr>
+<td><a href="#regs">regs</a></td>
+<td>打印寄存器的值</td>
+</tr>
+<tr>
+<td><a href="#set">set</a></td>
+<td>修改变量值</td>
+</tr>
+<tr>
+<td><a href="#vars">vars</a></td>
+<td>打印包变量</td>
+</tr>
+<tr>
+<td><a href="#whatis">whatis</a></td>
+<td>获取表达式类型</td>
+</tr>
+</tbody>
+</table>
+<h4 id="goroutine">查看和切换goroutine和线程<a class="headerlink" href="#goroutine" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#goroutine">goroutine</a></td>
+<td>显示或切换当前的Goroutine</td>
+</tr>
+<tr>
+<td><a href="#goroutines">goroutines</a></td>
+<td>列出程序所有goroutine</td>
+</tr>
+<tr>
+<td><a href="#thread">thread</a></td>
+<td>切换到指定线程</td>
+</tr>
+<tr>
+<td><a href="#threads">threads</a></td>
+<td>打印出每个被追踪线程的信息。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_9">查看调用堆栈和选择栈帧<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#deferred">deferred</a></td>
+<td>在一个延迟调用的上下文中执行命令。</td>
+</tr>
+<tr>
+<td><a href="#down">down</a></td>
+<td>将当前帧向下移动</td>
+</tr>
+<tr>
+<td><a href="#frame">frame</a></td>
+<td>设置当前帧，或在不同的帧上执行命令</td>
+</tr>
+<tr>
+<td><a href="#stack">stack</a></td>
+<td>打印堆栈记录</td>
+</tr>
+<tr>
+<td><a href="#up">up</a></td>
+<td>将当前帧向上移动</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_10">其他命令<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#check">check</a></td>
+<td>在当前位置创建一个检查点</td>
+</tr>
+<tr>
+<td><a href="#checkpoints">checkpoints</a></td>
+<td>打印出现有检查点的信息</td>
+</tr>
+<tr>
+<td><a href="#clear-checkpoint">clear-checkpoint</a></td>
+<td>删除检查点</td>
+</tr>
+<tr>
+<td><a href="#config">config</a></td>
+<td>改变配置参数</td>
+</tr>
+<tr>
+<td><a href="#disassemble">disassemble</a></td>
+<td>反汇编</td>
+</tr>
+<tr>
+<td><a href="#dump">dump</a></td>
+<td>从当前进程状态创建一个coredump</td>
+</tr>
+<tr>
+<td><a href="#edit">edit</a></td>
+<td>Open where you are in $DELVE_EDITOR or $EDITOR</td>
+</tr>
+<tr>
+<td><a href="#exit">exit</a></td>
+<td>退出</td>
+</tr>
+<tr>
+<td><a href="#funcs">funcs</a></td>
+<td>打印函数列表</td>
+</tr>
+<tr>
+<td><a href="#help">help</a></td>
+<td>打印帮助信息</td>
+</tr>
+<tr>
+<td><a href="#libraries">libraries</a></td>
+<td>列出加载的动态库</td>
+</tr>
+<tr>
+<td><a href="#list">list</a></td>
+<td>显示源码</td>
+</tr>
+<tr>
+<td><a href="#source">source</a></td>
+<td>执行一个包含dlv命令列表的文件</td>
+</tr>
+<tr>
+<td><a href="#sources">sources</a></td>
+<td>打印源文件列表</td>
+</tr>
+<tr>
+<td><a href="#types">types</a></td>
+<td>打印类型列表</td>
+</tr>
+</tbody>
+</table>
+<h4 id="args">args<a class="headerlink" href="#args" title="Permanent link">&para;</a></h4>
+<p>打印函数参数。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] args [-v] [&lt;regex&gt;]
+</code></pre></div>
+
+<p>如果指定了regex，只有名称与之匹配的函数参数才会被返回。如果指定了-v，将显示每个函数参数的更多信息。</p>
+<h4 id="break">break<a class="headerlink" href="#break" title="Permanent link">&para;</a></h4>
+<p>设置断点。</p>
+<div class="codehilite"><pre><span></span><code>break [name] &lt;linespec&gt;
+</code></pre></div>
+
+<p>参见<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md">Documentation/cli/locspec.md</a>了解linespec的语法。</p>
+<p>也请参见：”help on“、“help cond”和“help clear”。</p>
+<p>别名: b</p>
+<h4 id="breakpoints">breakpoints<a class="headerlink" href="#breakpoints" title="Permanent link">&para;</a></h4>
+<p>打印出生效断点的信息。</p>
+<p>别名: bp</p>
+<h4 id="call">call<a class="headerlink" href="#call" title="Permanent link">&para;</a></h4>
+<p>恢复进程，注入一个函数调用（实验性的！！！）</p>
+<div class="highlight"><pre><span></span><code>call [-unsafe] &lt;function call expression&gt;
+</code></pre></div>
+<p>当前限制:
+- 只有指向栈分配的对象的指针可以作为参数传递。
+- 只支持一些自动类型转换。
+- functions can only be called on running goroutines that are not
+  executing the runtime.
+- 当前的goroutine栈上需要有至少256字节的空闲空间。
+- functions can only be called when the goroutine is stopped at a safe
+  point.
+- 调用一个函数将恢复所有goroutine的执行。
+- 只支持Linux的本地后端.</p>
+<h4 id="check">check<a class="headerlink" href="#check" title="Permanent link">&para;</a></h4>
+<p>在当前位置创建一个检查点。</p>
+<div class="codehilite"><pre><span></span><code>checkpoint [note]
+</code></pre></div>
+
+<p>”note“是任意的文本，可用于标识检查点，如果没有指明，则默认为”filename:line position”。</p>
+<p>别名: checkpoint</p>
+<h4 id="checkpoints">checkpoints<a class="headerlink" href="#checkpoints" title="Permanent link">&para;</a></h4>
+<p>打印出现有检查点的信息。</p>
+<h4 id="clear">clear<a class="headerlink" href="#clear" title="Permanent link">&para;</a></h4>
+<p>删除断点。</p>
+<div class="codehilite"><pre><span></span><code>clear &lt;breakpoint name or id&gt;
+</code></pre></div>
+
+<h4 id="clear-checkpoint">clear-checkpoint<a class="headerlink" href="#clear-checkpoint" title="Permanent link">&para;</a></h4>
+<p>删除检查点。</p>
+<div class="codehilite"><pre><span></span><code>clear-checkpoint &lt;id&gt;
+</code></pre></div>
+
+<p>別名: clearcheck</p>
+<h4 id="clearall">clearall<a class="headerlink" href="#clearall" title="Permanent link">&para;</a></h4>
+<p>删除多个断点。</p>
+<div class="codehilite"><pre><span></span><code>clearall [&lt;linespec&gt;]
+</code></pre></div>
+
+<p>If called with the linespec argument it will delete all the breakpoints matching the linespec. If linespec is omitted all breakpoints are deleted.</p>
+<p>如果调用指定linespec参数，它将删除所有与linespec匹配的断点。如果省略linespec，则所有断点都会被删除。</p>
+<h4 id="condition">condition<a class="headerlink" href="#condition" title="Permanent link">&para;</a></h4>
+<p>设置断点条件。</p>
+<div class="codehilite"><pre><span></span><code>condition &lt;breakpoint name or id&gt; &lt;boolean expression&gt;.
+condition -hitcount &lt;breakpoint name or id&gt; &lt;operator&gt; &lt;argument&gt;
+</code></pre></div>
+
+<p>指定断点、跟踪点或观察点只有在布尔表达式为真时才会命中。</p>
+<p>通过-hitcount选项，可以设置断点条件的命中数，支持以下运算符：</p>
+<div class="codehilite"><pre><span></span><code>condition -hitcount bp &gt; n
+condition -hitcount bp &gt;= n
+condition -hitcount bp &lt; n
+condition -hitcount bp &lt;= n
+condition -hitcount bp == n
+condition -hitcount bp != n
+condition -hitcount bp % n
+</code></pre></div>
+
+<p>“% n”形式意味着当hitcount是n的倍数时，我们应该在断点处停止。</p>
+<p>别名: cond</p>
+<h4 id="config">config<a class="headerlink" href="#config" title="Permanent link">&para;</a></h4>
+<p>改变配置参数。</p>
+<div class="codehilite"><pre><span></span><code>config -list
+</code></pre></div>
+
+<p>显示所有配置参数。</p>
+<div class="codehilite"><pre><span></span><code>config -save
+</code></pre></div>
+
+<p>将配置文件保存到磁盘，覆盖当前配置文件。</p>
+<div class="codehilite"><pre><span></span><code>config &lt;parameter&gt; &lt;value&gt;
+</code></pre></div>
+
+<p>改变配置参数值。</p>
+<div class="codehilite"><pre><span></span><code>config substitute-path &lt;from&gt; &lt;to&gt;
+config substitute-path &lt;from&gt;
+</code></pre></div>
+
+<p>添加或删除一个路径替换规则。</p>
+<div class="codehilite"><pre><span></span><code>config alias &lt;command&gt; &lt;alias&gt;
+config alias &lt;alias&gt;
+</code></pre></div>
+
+<p>将<alias>定义为<command>的别名或删除一个别名。</p>
+<h4 id="continue">continue<a class="headerlink" href="#continue" title="Permanent link">&para;</a></h4>
+<p>运行至断点或程序终止。</p>
+<div class="codehilite"><pre><span></span><code>continue [&lt;linespec&gt;]
+</code></pre></div>
+
+<p>Optional linespec argument allows you to continue until a specific location is reached. The program will halt if a breakpoint is hit before reaching the specified location.</p>
+<p>可选的linespec参数允许你继续执行直到到达一个特定的位置。如果在到达指定位置之前断点命中，程序将停止运行。</p>
+<p>例如:</p>
+<div class="codehilite"><pre><span></span><code>continue main.main
+continue encoding/json.Marshal
+</code></pre></div>
+
+<p>别名: c</p>
+<h4 id="deferred">deferred<a class="headerlink" href="#deferred" title="Permanent link">&para;</a></h4>
+<p>在一个延迟调用的上下文中执行命令。</p>
+<div class="codehilite"><pre><span></span><code>deferred &lt;n&gt; &lt;command&gt;
+</code></pre></div>
+
+<p>在当前帧中第n个延迟调用的上下文中执行指定的命令（print, args, locals）。</p>
+<h4 id="disassemble">disassemble<a class="headerlink" href="#disassemble" title="Permanent link">&para;</a></h4>
+<p>反汇编。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] disassemble [-a &lt;start&gt; &lt;end&gt;] [-l &lt;locspec&gt;]
+</code></pre></div>
+
+<p>如果没有指定参数，在选定的栈帧中正在执行的函数将被反汇编。</p>
+<div class="codehilite"><pre><span></span><code>-a &lt;start&gt; &lt;end&gt;    反汇编指定的地址范围
+-l &lt;locspec&gt;        反汇编指定的函数
+</code></pre></div>
+
+<p>别名: disass</p>
+<h4 id="display">display<a class="headerlink" href="#display" title="Permanent link">&para;</a></h4>
+<p>每次程序停止时，打印表达式的值。</p>
+<div class="codehilite"><pre><span></span><code>display -a [%format] &lt;expression&gt;
+display -d &lt;number&gt;
+</code></pre></div>
+
+<p>选项'-a'将一个表达式添加到每次程序停止时打印的表达式列表中。选项'-d'从列表中删除指定的表达式。</p>
+<p>如果在没有参数的情况下调用display，它将打印列表中所有表达式的值。</p>
+<h4 id="down">down<a class="headerlink" href="#down" title="Permanent link">&para;</a></h4>
+<p>将当前帧向下移动。</p>
+<div class="codehilite"><pre><span></span><code>down [&lt;m&gt;]
+down [&lt;m&gt;] &lt;command&gt;
+</code></pre></div>
+
+<p>将当前帧向下移动<m>。第二种形式是在给定的帧上运行该命令。</p>
+<h4 id="dump">dump<a class="headerlink" href="#dump" title="Permanent link">&para;</a></h4>
+<p>从当前进程状态创建一个核心转储。</p>
+<div class="codehilite"><pre><span></span><code>dump &lt;output file&gt;
+</code></pre></div>
+
+<p>核心转储总是用ELF写的，即使是在不习惯这样做的系统上（windows, macOS）。对于linux/amd64以外的环境，线程和寄存器的转储格式只有Delve可以读回。</p>
+<h4 id="edit">edit<a class="headerlink" href="#edit" title="Permanent link">&para;</a></h4>
+<p>Open where you are in $DELVE_EDITOR or $EDITOR</p>
+<div class="codehilite"><pre><span></span><code>edit [locspec]
+</code></pre></div>
+
+<p>如果省略locspec，edit将在编辑器中打开当前的源文件，否则它将打开指定的位置。</p>
+<p>别名: ed</p>
+<h4 id="examinemem">examinemem<a class="headerlink" href="#examinemem" title="Permanent link">&para;</a></h4>
+<p>查看内存：</p>
+<div class="codehilite"><pre><span></span><code>examinemem [-fmt &lt;format&gt;] [-count|-len &lt;count&gt;] [-size &lt;size&gt;] &lt;address&gt;
+examinemem [-fmt &lt;format&gt;] [-count|-len &lt;count&gt;] [-size &lt;size&gt;] -x &lt;expression&gt;
+</code></pre></div>
+
+<p>Format代表数据格式，其值是这个列表中的一个（默认为十六进制）：bin（二进制），oct（八进制），dec（十进制），hex（十六进制），addr（地址）。</p>
+<p>长度是字节数（默认为1），必须小于或等于1000。</p>
+<p>地址是要检查的目标的内存位置。请注意“-len已经被“-count”和“-size”所淘汰。</p>
+<p>表达式可以是一个整数表达式或要检查的内存位置的指针值。</p>
+<p>比如说。</p>
+<div class="codehilite"><pre><span></span><code>x -fmt hex -count 20 -size 1 0xc00008af38
+x -fmt hex -count 20 -size 1 -x 0xc00008af38 + 8
+x -fmt hex -count 20 -size 1 -x &amp;myVar
+x -fmt hex -count 20 -size 1 -x myPtrVar
+</code></pre></div>
+
+<p>别名: x</p>
+<h4 id="exit">exit<a class="headerlink" href="#exit" title="Permanent link">&para;</a></h4>
+<p>退出调试。</p>
+<div class="highlight"><pre><span></span><code>exit [-c]
+</code></pre></div>
+<p>当连接到一个用--accept-multiclient启动的<code>headless</code>实例时，在断开连接前通过-c来恢复目标进程的执行。</p>
+<p>别名：quit q</p>
+<h4 id="frame">frame<a class="headerlink" href="#frame" title="Permanent link">&para;</a></h4>
+<p>设置当前帧，或在不同的帧上执行命令。</p>
+<div class="codehilite"><pre><span></span><code>frame &lt;m&gt;                   # 设置帧
+frame &lt;m&gt; &lt;command&gt;         # 在给定帧上执行命令
+</code></pre></div>
+
+<h4 id="funcs">funcs<a class="headerlink" href="#funcs" title="Permanent link">&para;</a></h4>
+<p>打印函数列表</p>
+<div class="codehilite"><pre><span></span><code>funcs [&lt;regex&gt;]
+</code></pre></div>
+
+<p>如果指定了regex，只有与之匹配的函数才会被返回。</p>
+<h4 id="goroutine_1">goroutine<a class="headerlink" href="#goroutine_1" title="Permanent link">&para;</a></h4>
+<p>显示或改变当前的Goroutine。</p>
+<div class="codehilite"><pre><span></span><code>goroutine
+goroutine &lt;id&gt;
+goroutine &lt;id&gt; &lt;command&gt;
+</code></pre></div>
+
+<p>在没有参数的情况下调用，它将显示关于当前goroutine的信息。
+用一个参数调用，它将切换到指定的goroutine。
+用更多的参数调用，它将在指定的goroutine上执行一个命令。</p>
+<p>别名：gr</p>
+<h4 id="goroutines">goroutines<a class="headerlink" href="#goroutines" title="Permanent link">&para;</a></h4>
+<p>列出程序goroutines。</p>
+<div class="codehilite"><pre><span></span><code>goroutines [-u (default: user location)|-r (runtime location)|-g (go statement location)|-s (start location)] [-t (stack trace)] [-l (labels)]
+</code></pre></div>
+
+<p>打印出每个goroutine的信息。该标志控制了每个goroutine所显示的信息：</p>
+<div class="codehilite"><pre><span></span><code>-u  显示用户代码中最顶层栈帧的位置
+-r  显示最顶层的栈帧的位置 (包括私有运行时函数内部的帧)
+-g  显示创建goroutine的go指令的位置
+-s  显示函数开始的位置
+-t  显示goroutine的堆栈跟踪记录
+-l  显示goroutine的标签
+</code></pre></div>
+
+<p>如果没有指定标志，默认为-u。</p>
+<p>别名：grs</p>
+<h4 id="help">help<a class="headerlink" href="#help" title="Permanent link">&para;</a></h4>
+<p>打印帮助信息。</p>
+<div class="codehilite"><pre><span></span><code>help [command]
+</code></pre></div>
+
+<p>键入 "help"，并加上命令名，以获得更多相关信息。</p>
+<h4 id="libraries">libraries<a class="headerlink" href="#libraries" title="Permanent link">&para;</a></h4>
+<p>列出已加载的动态库。</p>
+<h4 id="list">list<a class="headerlink" href="#list" title="Permanent link">&para;</a></h4>
+<p>查看源码。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] list [&lt;linespec&gt;]
+</code></pre></div>
+
+<p>显示当前执行点或提供的linespec周围的源码。</p>
+<p>比如:</p>
+<div class="codehilite"><pre><span></span><code>frame 1 list 69
+list testvariables.go:10000
+list main.main:30
+list 40
+</code></pre></div>
+
+<p>别名: ls l</p>
+<h4 id="locals">locals<a class="headerlink" href="#locals" title="Permanent link">&para;</a></h4>
+<p>打印局部变量。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] locals [-v] [&lt;regex&gt;]
+</code></pre></div>
+
+<p>The name of variables that are shadowed in the current scope will be shown in parenthesis.</p>
+<p>如果指定了regex，只有名称与之匹配的局部变量才会被返回。如果指定了-v，将显示每个局部变量的更多信息。</p>
+<h4 id="next">next<a class="headerlink" href="#next" title="Permanent link">&para;</a></h4>
+<p>走到下一个代码行。</p>
+<div class="codehilite"><pre><span></span><code>next [count]
+</code></pre></div>
+
+<p>可选的[count]参数允许跳过多行。</p>
+<p>别名：n</p>
+<h4 id="on">on<a class="headerlink" href="#on" title="Permanent link">&para;</a></h4>
+<p>当断点命中，执行一个命令。</p>
+<div class="codehilite"><pre><span></span><code>on &lt;breakpoint name or id&gt; &lt;command&gt;.
+</code></pre></div>
+
+<p>支持的命令：（print、stack and goroutine）</p>
+<h4 id="print">print<a class="headerlink" href="#print" title="Permanent link">&para;</a></h4>
+<p>打印表达式值</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] print [%format] &lt;expression&gt;
+</code></pre></div>
+
+<p>关于支持的表达式的描述，请参见<a href="https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md">Documentation/cli/expr.md</a>。</p>
+<p>可选的<code>format</code>参数是一个格式指定符，就像<code>fmt</code>包所使用的那样。例如，"print %x v "将把v打印成一个十六进制的数字。</p>
+<p>别名：p</p>
+<h4 id="rebuild">rebuild<a class="headerlink" href="#rebuild" title="Permanent link">&para;</a></h4>
+<p>重建目标可执行文件并重新启动它。如果该可执行文件不是由delve构建的，它就不起作用。</p>
+<h4 id="regs">regs<a class="headerlink" href="#regs" title="Permanent link">&para;</a></h4>
+<p>打印CPU寄存器的内容。</p>
+<div class="codehilite"><pre><span></span><code>regs [-a]
+</code></pre></div>
+
+<p>参数-a显示更多的寄存器。单个寄存器也可以通过“print”和“display”来显示。参见<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md.">Documentation/cli/expr.md.</a></p>
+<h4 id="restart">restart<a class="headerlink" href="#restart" title="Permanent link">&para;</a></h4>
+<p>重启进程。</p>
+<p>For recorded targets the command takes the following forms:</p>
+<div class="codehilite"><pre><span></span><code>restart                 resets to the start of the recording
+restart [checkpoint]            resets the recording to the given checkpoint
+restart -r [newargv...] [redirects...]  re-records the target process
+</code></pre></div>
+
+<p>For live targets the command takes the following forms:</p>
+<div class="codehilite"><pre><span></span><code>restart [newargv...] [redirects...] restarts the process
+</code></pre></div>
+
+<p>如果省略newargv，进程将以相同的参数向量重新启动（或重新记录）。
+如果指定了-noargs，则参数向量被清除。</p>
+<p>可以在新的参数列表后指定一个文件重定向列表，以覆盖使用"--重定向 "命令行选项定义的重定向。使用的是类似于Unix shells的语法。    </p>
+<div class="codehilite"><pre><span></span><code>&lt;input.txt  redirects the standard input of the target process from input.txt
+&gt;output.txt redirects the standard output of the target process to output.txt
+2&gt;error.txt redirects the standard error of the target process to error.txt
+</code></pre></div>
+
+<p>别名：r</p>
+<h4 id="set">set<a class="headerlink" href="#set" title="Permanent link">&para;</a></h4>
+<p>改变变量的值。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] set &lt;variable&gt; = &lt;value&gt;
+</code></pre></div>
+
+<p>关于支持的表达式的描述，请参见<a href="https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md">Documentation/cli/expr.md</a>。只有数字型变量和指针可以被改变。</p>
+<h4 id="source">source<a class="headerlink" href="#source" title="Permanent link">&para;</a></h4>
+<p>执行一个包含delve命令列表的文件。</p>
+<div class="codehilite"><pre><span></span><code>source &lt;path&gt;
+</code></pre></div>
+
+<p>如果<code>path</code>以.star扩展名结尾，它将被解释为一个starlark脚本。语法见 <a href="//github.com/go-delve/telve/master/Documentation/cli/starlark.md">Documentation/cli/starlark.md</a>。</p>
+<p>如果<code>path</code>是一个单一的’-‘字符，一个交互式的starlark解释器将被启动。键入”exit“来退出。</p>
+<h4 id="sources">sources<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h4>
+<p>打印源文件的清单。</p>
+<div class="codehilite"><pre><span></span><code>sources [&lt;regex&gt;]
+</code></pre></div>
+
+<p>如果指定了regex，只有与之匹配的源文件才会被返回。</p>
+<h4 id="stack">stack<a class="headerlink" href="#stack" title="Permanent link">&para;</a></h4>
+<p>打印堆栈跟踪。</p>
+<div class="codehilite"><pre><span></span><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] stack [&lt;depth&gt;] [-full] [-offsets] [-defer] [-a &lt;n&gt;] [-adepth &lt;depth&gt;] [-mode &lt;mode&gt;]
+
+-full       every stackframe is decorated with the value of its local variables and arguments.
+-offsets    prints frame offset of each frame.
+-defer      prints deferred function call stack for each frame.
+-a &lt;n&gt;      prints stacktrace of n ancestors of the selected goroutine (target process must have tracebackancestors enabled)
+-adepth &lt;depth&gt; configures depth of ancestor stacktrace
+-mode &lt;mode&gt;    specifies the stacktrace mode, possible values are:
+        normal  - attempts to automatically switch between cgo frames and go frames
+        simple  - disables automatic switch between cgo and go
+        fromg   - starts from the registers stored in the runtime.g struct
+</code></pre></div>
+
+<p>别名：bt</p>
+<h4 id="step">step<a class="headerlink" href="#step" title="Permanent link">&para;</a></h4>
+<p>单步执行程序</p>
+<p>别名：s</p>
+<h4 id="step-instruction">step-instruction<a class="headerlink" href="#step-instruction" title="Permanent link">&para;</a></h4>
+<p>单步执行cpu指令</p>
+<p>别名：si</p>
+<h4 id="stepout">stepout<a class="headerlink" href="#stepout" title="Permanent link">&para;</a></h4>
+<p>走出当前函数</p>
+<p>别名：so</p>
+<h4 id="thread">thread<a class="headerlink" href="#thread" title="Permanent link">&para;</a></h4>
+<p>切换到指定的线程。</p>
+<div class="codehilite"><pre><span></span><code>thread &lt;id&gt;
+</code></pre></div>
+
+<p>别名：tr</p>
+<h4 id="threads">threads<a class="headerlink" href="#threads" title="Permanent link">&para;</a></h4>
+<p>打印出每个被追踪线程的信息。</p>
+<h4 id="toggle">toggle<a class="headerlink" href="#toggle" title="Permanent link">&para;</a></h4>
+<p>打开或关闭一个断点。</p>
+<div class="highlight"><pre><span></span><code>toggle &lt;breakpoint name or id&gt;
+</code></pre></div>
+<h4 id="trace">trace<a class="headerlink" href="#trace" title="Permanent link">&para;</a></h4>
+<p>设置跟踪点。</p>
+<div class="codehilite"><pre><span></span><code>trace [name] &lt;linespec&gt;
+</code></pre></div>
+
+<p>跟踪点是一个不会停止程序执行的断点，相反，当跟踪点被击中时，会显示一个通知。请参阅<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md">Documentation/cli/locspec.md</a>了解linespec的语法。</p>
+<p>也请参见: "help on", "help cond" and "help clear"</p>
+<p>别名：t</p>
+<h4 id="types">types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h4>
+<p>打印类型列表。</p>
+<div class="codehilite"><pre><span></span><code>types [&lt;regex&gt;]
+</code></pre></div>
+
+<p>如果指定了regex，只有与之匹配的类型才会被返回。</p>
+<h4 id="up">up<a class="headerlink" href="#up" title="Permanent link">&para;</a></h4>
+<p>将当前帧向上移动。</p>
+<div class="codehilite"><pre><span></span><code>up [&lt;m&gt;]                # 将当前帧向上移动&lt;m&gt;
+up [&lt;m&gt;] &lt;command&gt;      # 在给定的帧上运行该命令
+</code></pre></div>
+
+<h4 id="vars">vars<a class="headerlink" href="#vars" title="Permanent link">&para;</a></h4>
+<p>打印包变量。</p>
+<div class="codehilite"><pre><span></span><code>vars [-v] [&lt;regex&gt;]
+</code></pre></div>
+
+<p>如果指定了regex，只有名称与之匹配的包变量才会被返回。如果指定了-v，将显示关于每个包变量的更多信息。</p>
+<h4 id="watch">watch<a class="headerlink" href="#watch" title="Permanent link">&para;</a></h4>
+<p>设置观察点。</p>
+<div class="highlight"><pre><span></span><code>watch [-r|-w|-rw] &lt;expr&gt;
+
+-r  当内存位置被读取时停止
+-w  当内存位置被写入时停止
+-rw 当内存位置被读取或写入时停止
+</code></pre></div>
+<p>内存位置是与'print'所使用的表达式语言一样来指定的，例如：</p>
+<div class="codehilite"><pre><span></span><code>watch v
+</code></pre></div>
+
+<p>将观察变量”v“的地址。</p>
+<p>参考: "help print".</p>
+<h4 id="whatis">whatis<a class="headerlink" href="#whatis" title="Permanent link">&para;</a></h4>
+<p>打印表达式的类型。</p>
+<div class="codehilite"><pre><span></span><code>whatis &lt;expression&gt;
+</code></pre></div>
+
+<h3 id="_11">常见问题<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<h4 id="dockerdlv">如何在docker中使用dlv<a class="headerlink" href="#dockerdlv" title="Permanent link">&para;</a></h4>
+<p>启动docker容器时，增加参数<code>--security-opt=seccomp:unconfined</code>。</p>
+<p>你可以像这样在容器内启动一个Delve的<code>headless</code>实例:</p>
+<div class="highlight"><pre><span></span><code>$ dlv <span class="nb">exec</span> --headless --listen :4040 /path/to/executable
+</code></pre></div>
+<p>然后从容器外连接到它:</p>
+<div class="highlight"><pre><span></span><code>$ dlv connect :4040
+</code></pre></div>
+<p>程序不会开始执行，直到你连接到Delve并发送<code>continue</code>命令。 如果你想让程序立即开始，你可以通过向Delve传递<code>--continue</code>和<code>--accept-multiclient</code>选项来实现:</p>
+<div class="highlight"><pre><span></span><code>$ dlv <span class="nb">exec</span> --headless --continue --listen :4040 --accept-multiclient /path/to/executable
+</code></pre></div>
+<p>注意，与Delve的连接是未经认证的，将允许任意的远程代码执行。<em>请不要在生产中这样做</em>。</p>
+<h4 id="delvecli">如何使用Delve来调试CLI应用程序<a class="headerlink" href="#delvecli" title="Permanent link">&para;</a></h4>
+<ol>
+<li>在一个单独的终端中运行你的CLI应用程序，然后通过<code>dlv attach</code>调试。</li>
+<li>通过<code>dlv debug --headless</code>在<code>headless</code>模式下运行Delve，然后从另一个终端连接到它。这将使该进程处于前台，并允许它访问终端TTY。</li>
+<li>为进程指定它自己的TTY。这在UNIX系统上可以使用<code>dlv debug</code>和<code>dlv exec</code>命令通过<code>--tty</code>标志来实现。为了获得最好的体验，你应该创建你自己的PTY并将其指定为TTY。这可以通过<a href="https://github.com/derekparker/ptyme">ptyme</a>完成。</li>
+</ol>
+<h4 id="dlv_1">如何使用dlv进行远程调试<a class="headerlink" href="#dlv_1" title="Permanent link">&para;</a></h4>
+<p>建议最好不要在公网上使用远程调试。如果你必须远程调试，我们建议使用ssh隧道或者VPN连接。</p>
+<p><strong>示例</strong> </p>
+<p>远程服务端:</p>
+<div class="highlight"><pre><span></span><code>$ dlv <span class="nb">exec</span> --headless --listen localhost:4040 /path/to/executable
+</code></pre></div>
+<p>本地客户端:
+1. 连接到服务端并且启动一个本地端口转发</p>
+<div class="highlight"><pre><span></span><code>$ ssh -NL <span class="m">4040</span>:localhost:4040 user@remote.ip
+</code></pre></div>
+<ol>
+<li>连接本地端口
+<div class="highlight"><pre><span></span><code>$ dlv connect :4040
+</code></pre></div></li>
+</ol>
+<h3 id="_12">参考文章<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv.md">delve usage</a></p>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/cli/README.md">Command line client</a></p>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/cli/getting_started.md">Getting Started</a></p>
+<p><a href="https://github.com/go-delve/delve/blob/master/Documentation/faq.md">delve FAQ</a></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              Go程序是如何启动的
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../../about/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              About
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2021 MoyChen
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      
+    
+  </body>
+</html>

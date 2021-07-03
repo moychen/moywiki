@@ -398,10 +398,195 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Go程序是如何启动的
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Go程序是如何启动的
       </a>
       
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    理解可执行文件
+  </a>
+  
+    <nav class="md-nav" aria-label="理解可执行文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    程序构建过程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    可执行文件
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#go_1" class="md-nav__link">
+    Go进程的启动和初始化
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    调度组件与调度循环
+  </a>
+  
+    <nav class="md-nav" aria-label="调度组件与调度循环">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    调度流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    生产者
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    消费者
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    处理阻塞
+  </a>
+  
+    <nav class="md-nav" aria-label="处理阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    可拦截的阻塞
+  </a>
+  
+    <nav class="md-nav" aria-label="可拦截的阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#channel-sendrecv" class="md-nav__link">
+    channel send/recv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timesleep" class="md-nav__link">
+    time.Sleep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    select
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lock" class="md-nav__link">
+    lock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io" class="md-nav__link">
+    网络IO
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    不可拦截的阻塞
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sysmon" class="md-nav__link">
+    sysmon
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    与调度有关的常见问题
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-nav__link">
+        Go语言调试
+      </a>
     </li>
   
 
@@ -452,6 +637,164 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    理解可执行文件
+  </a>
+  
+    <nav class="md-nav" aria-label="理解可执行文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    程序构建过程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    可执行文件
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#go_1" class="md-nav__link">
+    Go进程的启动和初始化
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    调度组件与调度循环
+  </a>
+  
+    <nav class="md-nav" aria-label="调度组件与调度循环">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    调度流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    生产者
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    消费者
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    处理阻塞
+  </a>
+  
+    <nav class="md-nav" aria-label="处理阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    可拦截的阻塞
+  </a>
+  
+    <nav class="md-nav" aria-label="可拦截的阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#channel-sendrecv" class="md-nav__link">
+    channel send/recv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timesleep" class="md-nav__link">
+    time.Sleep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    select
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lock" class="md-nav__link">
+    lock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io" class="md-nav__link">
+    网络IO
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    不可拦截的阻塞
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sysmon" class="md-nav__link">
+    sysmon
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    与调度有关的常见问题
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -464,6 +807,126 @@
                 
                 
                 <h1 id="go">Go程序是如何启动的<a class="headerlink" href="#go" title="Permanent link">&para;</a></h1>
+<h2 id="_1">理解可执行文件<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">程序构建过程<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>$ go build -x go文件  <span class="c1"># -x 打印构建详细过程</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>$ go build -x demo.go
+WORK=/tmp/go-build650300936
+mkdir -p $WORK/b001/
+cat &gt;$WORK/b001/importcfg &lt;&lt; &#39;EOF&#39; # internal
+# import config
+packagefile fmt=/usr/local/go/pkg/linux_amd64/fmt.a
+packagefile runtime=/usr/local/go/pkg/linux_amd64/runtime.a
+EOF
+cd /root/moychen/demo
+-------------------------------编译-----------------------------------
+/usr/local/go/pkg/tool/linux_amd64/compile -o $WORK/b001/_pkg_.a -trimpath &quot;$WORK/b001=&gt;&quot; -p main -complete -buildid IHvcy5J3sPf6q7qSX-yU/IHvcy5J3sPf6q7qSX-yU -goversion go1.15.2 -D _/root/moychen/demo -importcfg $WORK/b001/importcfg -pack ./demo.go
+/usr/local/go/pkg/tool/linux_amd64/buildid -w $WORK/b001/_pkg_.a # internal
+cp $WORK/b001/_pkg_.a /root/.cache/go-build/5d/5d735f650ab1e82b957e556236d1f63ac6f76a8dcd5e347a1f7c98d556a8b37f-d # internal
+cat &gt;$WORK/b001/importcfg.link &lt;&lt; &#39;EOF&#39; # internal
+packagefile command-line-arguments=$WORK/b001/_pkg_.a
+...
+packagefile internal/race=/usr/local/go/pkg/linux_amd64/internal/race.a
+EOF
+mkdir -p $WORK/b001/exe/
+cd .
+-------------------------------- 链接----------------------------------
+/usr/local/go/pkg/tool/linux_amd64/link -o $WORK/b001/exe/a.out -importcfg $WORK/b001/importcfg.link -buildmode=exe -buildid=VljoluUulGgW80qhU4WS/IHvcy5J3sPf6q7qSX-yU/CUJ3YEw9E6g_F0Y_-2iM/VljoluUulGgW80qhU4WS -extld=gcc $WORK/b001/_pkg_.a
+/usr/local/go/pkg/tool/linux_amd64/buildid -w $WORK/b001/exe/a.out # internal
+mv $WORK/b001/exe/a.out demo
+rm -r $WORK/b001/
+</code></pre></div>
+<h3 id="_3">可执行文件<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>可执行文件在不同平台格式规范也不一致。以Linux下ELF（Executable and Linkable Format）为例，详细内容参考<a href="https://github.com/corkami/pics/blob/28cb0226093ed57b348723bc473cea0162dad366/binary/elf101/elf101.pdf[">ELF规范参考文档</a>，ELF文件主要组成部分有：</p>
+<blockquote>
+<ul>
+<li>ELF header</li>
+<li>Section header</li>
+<li>Sections</li>
+</ul>
+</blockquote>
+<p><img alt="image-20210519180400990" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210519180400990.png" /></p>
+<p>如上图所示，通过ELF header中的 entry point 能够找到 Go 进程的执行入口。Linux下运行可执行文件的步骤大致如下：</p>
+<div class="highlight"><pre><span></span><code>graph LR;
+解析ELF-Header --&gt; 加载二进制文件内容至内存 --&gt; 从entry-point开始执行代码;
+</code></pre></div>
+<h2 id="go_1">Go进程的启动和初始化<a class="headerlink" href="#go_1" title="Permanent link">&para;</a></h2>
+<p>生成二进制可执行文件后，启动时计算机通过执行二进制机器码指令运行程序，每执行一条语句pc寄存器就指向下一条指令。在 64 位平台上 pc 寄存器 = rip。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// demo.go </span>
+<span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>go build 生成可执行文件demo，然后通过readelf -h demo找到可执行文件demo的entry point找到程序入口，使用dlv调试程序。</p>
+<p><img alt="image-20210520210757578" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210520210757578.png" /></p>
+<p>中间省略一下没有用的信息。</p>
+<p><img alt="image-20210520211303257" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210520211303257.png" /></p>
+<p>从上图的结果来看go启动流程大致为：</p>
+<div class="highlight"><pre><span></span><code>graph TD;
+_rt0_amd64_linux --&gt; _rt0_amd64 --&gt; runtime.rt0_go; 
+</code></pre></div>
+<p>runtime.rt0_go中主要工作有：</p>
+<div class="highlight"><pre><span></span><code>graph LR;
+argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初始化内部数据结构 --&gt; 开始执行main函数;
+</code></pre></div>
+<h2 id="_4">调度组件与调度循环<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p><strong>G（goroutine）</strong>：⼀个计算任务。由需要执⾏的代码和其上下⽂组成，上下⽂包括：当前代码位置、栈顶、栈底地址、状态等。</p>
+<p><strong>M（machine）</strong>：系统线程，执⾏实体，想要在 CPU 上执⾏代码，必须有线程，与 C 语⾔中的线程相同，通过系统调⽤ clone 来创建。</p>
+<p><strong>P（processor）</strong>：虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷⼊休眠（后台监控线程除外），你也可以将其理解为⼀种 token，有这个 token，才有在物理 CPU 核心上执行的权利。</p>
+<h3 id="_5">调度流程<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>Go的调度流程实际上是一个生产-消费流程，当我们新增一个go routine的时候实际上是向runtime 调度组件中新增一个task。</p>
+<p><img alt="image-20210521163354177" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210521163354177.png" /></p>
+<h3 id="_6">生产者<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p><img src="images/Go程序是如何启动的/image-20210521165029181.png" alt="image-20210521165029181" style="zoom:67%;" /></p>
+<h3 id="_7">消费者<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p><img alt="image-20210521165214744" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210521165214744.png" /></p>
+<blockquote>
+<ul>
+<li>M 执⾏调度循环时，必须与⼀个 P 绑定</li>
+<li>Work stealing 就是说的 runqsteal -&gt; runqgrab 这个流程</li>
+</ul>
+</blockquote>
+<p><img src="images/Go程序是如何启动的/image-20210521165441266.png" alt="image-20210521165441266" style="zoom: 50%;" /></p>
+<h2 id="_8">处理阻塞<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>Go中阻塞大概有这么几种场景：</p>
+<blockquote>
+<ul>
+<li>channel send/recv</li>
+<li>sleep</li>
+<li>select</li>
+<li>lock</li>
+<li>网络IO</li>
+</ul>
+</blockquote>
+<p>当上述阻塞场景之一发生时，Go会将该goroutine挂起，不会阻塞Go的调度流程。挂起指的是调度组件会将该goroutine放入等待队列，待可执行时，待ready后再继续执行，不会占用线程。</p>
+<h3 id="_9">可拦截的阻塞<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<h4 id="channel-sendrecv">channel send/recv<a class="headerlink" href="#channel-sendrecv" title="Permanent link">&para;</a></h4>
+<h4 id="timesleep">time.Sleep<a class="headerlink" href="#timesleep" title="Permanent link">&para;</a></h4>
+<h4 id="select">select<a class="headerlink" href="#select" title="Permanent link">&para;</a></h4>
+<h4 id="lock">lock<a class="headerlink" href="#lock" title="Permanent link">&para;</a></h4>
+<h4 id="io">网络IO<a class="headerlink" href="#io" title="Permanent link">&para;</a></h4>
+<h3 id="_10">不可拦截的阻塞<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<blockquote>
+<ul>
+<li>cgo</li>
+<li>syscall 系统调用</li>
+<li>⻓时间运⾏需要剥离 P 执⾏</li>
+</ul>
+</blockquote>
+<h3 id="sysmon">sysmon<a class="headerlink" href="#sysmon" title="Permanent link">&para;</a></h3>
+<p>sysmon是runtime中的system monitor，具有高优先级，在专有线程中执行，并且不需要绑定P。</p>
+<p>checkdead：常见误解—这个可以检查死锁</p>
+<p>netpoll：inject g list to global run queue</p>
+<p>retake：如果syscall卡了很久，就把剥离（handoff p）</p>
+<p>​               如果用户g运行很久，那么发信号SIGURG抢占</p>
+<h2 id="_11">与调度有关的常见问题<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
                 
               
               
@@ -497,13 +960,13 @@
         </a>
       
       
-        <a href="../../about/" class="md-footer__link md-footer__link--next" rel="next">
+        <a href="../Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-footer__link md-footer__link--next" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 下一页
               </span>
-              About
+              Go语言调试
             </div>
           </div>
           <div class="md-footer__button md-icon">
