@@ -1,834 +1,243 @@
-
-<!doctype html>
-<html lang="zh" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-      
-      
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
         <meta name="author" content="moychen">
-      
-      
         <link rel="canonical" href="https://moychen.github.io/moywiki/CC%2B%2B/MallocInternals/">
-      
-      <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
-    
-    
-      
-        <title>Malloc Internals - MoyWiki</title>
-      
-    
-    
-      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
-      
-        
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
-        
-      
-    
-    
-    
-      
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
-      
-    
-    
-    
-    
-      
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
-  
-    
-    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
-    
-      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#malloc-internals" class="md-skip">
-          跳转至
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-      <header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MoyWiki" class="md-header__button md-logo" aria-label="MoyWiki" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>MallocInternals - MoyWiki</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
 
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            MoyWiki
-          </span>
-        </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Malloc Internals
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      <form class="md-header__option" data-md-component="palette">
-        
-          
-          
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" type="radio" name="__palette" id="__palette_1">
-          
-            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2m10-3a5 5 0 0 1 5 5 5 5 0 0 1-5 5H7a5 5 0 0 1-5-5 5 5 0 0 1 5-5h10M7 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3h10a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7z"/></svg>
-            </label>
-          
-        
-          
-          
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="red" type="radio" name="__palette" id="__palette_2">
-          
-            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg>
-            </label>
-          
-        
-      </form>
-    
-    
-    
-      <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-      </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
-      <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
-      </button>
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            正在初始化搜索引擎
-          </div>
-          <ol class="md-search-result__list"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-    
-    
-      <div class="md-header__source">
-        
-<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    moychen/moywiki
-  </div>
-</a>
-      </div>
-    
-  </nav>
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-tabs__inner md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">MoyWiki</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-
-  <li class="md-tabs__item">
-    <a href="../.." class="md-tabs__link">
-      Home
-    </a>
-  </li>
-
-      
-        
-  
-  
-    
-  
-
-
-  
-  
-  
-    
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="./" class="md-tabs__link md-tabs__link--active">
-        Language
-      </a>
-    </li>
-  
-
-  
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="../../about/" class="md-tabs__link">
-      About
-    </a>
-  </li>
-
-      
-    </ul>
-  </div>
-</nav>
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MoyWiki" class="md-nav__button md-logo" aria-label="MoyWiki" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
-
-    </a>
-    MoyWiki
-  </label>
-  
-    <div class="md-nav__source">
-      
-<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    moychen/moywiki
-  </div>
-</a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
-        Home
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
-      
-      <label class="md-nav__link" for="__nav_2">
-        Language
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Language" data-md-level="1">
-        <label class="md-nav__title" for="__nav_2">
-          <span class="md-nav__icon md-icon"></span>
-          Language
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-    
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
-      
-      <label class="md-nav__link" for="__nav_2_1">
-        C/C++
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="C/C++" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          C/C++
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Malloc Internals
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        Malloc Internals
-      </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview-of-malloc" class="md-nav__link">
-    Overview of Malloc
-  </a>
-  
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../Index/" class="dropdown-item">C/C++</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-a-chunk" class="md-nav__link">
-    What is a Chunk?
-  </a>
-  
+                                    
+<li>
+    <a href="../../Golang/Index/" class="dropdown-item">Golang</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#arenas-and-heaps" class="md-nav__link">
-    Arenas and Heaps
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#thread-local-cache-tcache" class="md-nav__link">
-    Thread Local Cache (tcache)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#malloc-algorithm" class="md-nav__link">
-    Malloc Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#free-algorithm" class="md-nav__link">
-    Free Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#realloc-algorithm" class="md-nav__link">
-    Realloc Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#switching-arenas" class="md-nav__link">
-    Switching arenas
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#platform-specific-thresholds-and-constants" class="md-nav__link">
-    Platform-specific Thresholds and Constants
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tbd" class="md-nav__link">
-    TBD
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#colophon" class="md-nav__link">
-    Colophon
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
+                                </ul>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../about/" class="nav-link">About</a>
+                            </li>
+                        </ul>
 
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
-      
-      <label class="md-nav__link" for="__nav_2_2">
-        Golang
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Golang" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_2">
-          <span class="md-nav__icon md-icon"></span>
-          Golang
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-nav__link">
-        Go语言调试
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../about/" class="md-nav__link">
-        About
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/moychen/moywiki" class="nav-link">moychen/moywiki</a>
+                            </li>
+                    </ul>
                 </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
     
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview-of-malloc" class="md-nav__link">
-    Overview of Malloc
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-a-chunk" class="md-nav__link">
-    What is a Chunk?
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#arenas-and-heaps" class="md-nav__link">
-    Arenas and Heaps
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#thread-local-cache-tcache" class="md-nav__link">
-    Thread Local Cache (tcache)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#malloc-algorithm" class="md-nav__link">
-    Malloc Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#free-algorithm" class="md-nav__link">
-    Free Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#realloc-algorithm" class="md-nav__link">
-    Realloc Algorithm
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#switching-arenas" class="md-nav__link">
-    Switching arenas
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#platform-specific-thresholds-and-constants" class="md-nav__link">
-    Platform-specific Thresholds and Constants
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tbd" class="md-nav__link">
-    TBD
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#colophon" class="md-nav__link">
-    Colophon
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
             
-          
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
-                
-                
-                <h1 id="malloc-internals">Malloc Internals<a class="headerlink" href="#malloc-internals" title="Permanent link">&para;</a></h1>
-<h2 id="overview-of-malloc">Overview of Malloc<a class="headerlink" href="#overview-of-malloc" title="Permanent link">&para;</a></h2>
-<p>The GNU C library's (glibc's) malloc library contains a handful of functions that manage allocated memory in the application's address space. The glibc malloc is derived from ptmalloc (pthreads malloc), which is derived from dlmalloc (Doug Lea malloc). This malloc is a "heap" style malloc, which means that chunks of various sizes exist within a larger region of memory (a "heap") as opposed to, for example, an implementation that uses bitmaps and arrays, or regions of same-sized blocks, etc. In ancient times, there was one heap per application, but glibc's malloc allows for multiple heaps, each of which grows within its address space.</p>
-<p>Thus, within this document, we refer to some common terms:</p>
-<ul>
-<li>Arena</li>
-</ul>
-<p>A structure that is shared among one or more threads which contains references to one or more heaps, as well as linked lists of chunks within those heaps which are "free". Threads assigned to each arena will allocate memory from that arena's free lists.</p>
-<ul>
-<li>Heap</li>
-</ul>
-<p>A contiguous region of memory that is subdivided into chunks to be allocated. Each heap belongs to exactly one arena.</p>
-<ul>
-<li>Chunk</li>
-</ul>
-<p>A small range of memory that can be allocated (owned by the application), freed (owned by glibc), or combined with adjacent chunks into larger ranges. Note that a chunk is a wrapper around the block of memory that is given to the application. Each chunk exists in one heap and belongs to one arena.</p>
-<ul>
-<li>Memory</li>
-</ul>
-<p>A portion of the application's address space which is typically backed by RAM or swap.</p>
+            <li class="nav-item" data-level="1"><a href="#mallocinternals" class="nav-link">MallocInternals</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#overview-of-malloc" class="nav-link">Overview of Malloc</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#what-is-a-chunk" class="nav-link">What is a Chunk?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#arenas-and-heaps" class="nav-link">Arenas and Heaps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#thread-local-cache-tcache" class="nav-link">Thread Local Cache (tcache)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#malloc-algorithm" class="nav-link">Malloc Algorithm</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#free-algorithm" class="nav-link">Free Algorithm</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#realloc-algorithm" class="nav-link">Realloc Algorithm</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#switching-arenas" class="nav-link">Switching arenas</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#platform-specific-thresholds-and-constants" class="nav-link">Platform-specific Thresholds and Constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#tbd" class="nav-link">TBD</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#colophon" class="nav-link">Colophon</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="mallocinternals"><a class="toclink" href="#mallocinternals">MallocInternals</a><a class="headerlink" href="#mallocinternals" title="Permanent link">&para;</a></h1>
+<h2 id="overview-of-malloc"><a class="toclink" href="#overview-of-malloc">Overview of Malloc</a><a class="headerlink" href="#overview-of-malloc" title="Permanent link">&para;</a></h2>
+<p>GNU C库（glibc）的 malloc 库包含了一些管理应用程序地址空间中分配的内存的函数。glibc 的 malloc 是由 ptmalloc（pthreads malloc）派生出来的，而 pthreads malloc 是由 dlmalloc（Doug Lea malloc）派生出来的。这个 malloc 是一个 "heap" 风格的 malloc，这意味着不同大小的<code>chunk</code>存在于一个更大的内存区域（a "heap"）中，而不是像其他的实现那样，使用位图和数组，或者相同大小的块的区域等。在很久之前，每个应用程序一个堆，但 glibc 的 malloc 允许多个堆，每个堆都在其地址空间内增长。</p>
+<p>在本文档中，我们会提及一些常用术语：</p>
+<p><strong>Arena</strong></p>
+<p>一个结构，能在一个或多个线程之间共享，它包含对一个或多个堆的引用，以及这些堆中 "free" 的块的链表。被分配到每个<code>arena</code>的线程将从该<code>arena</code>的空闲列表中分配内存。</p>
+<p><strong>Heap</strong></p>
+<p>一个连续的内存区域，被细分为要分配的<code>chunk</code>。每个堆正好属于一个<code>arena</code>。</p>
+<p><strong>Chunk</strong></p>
+<p>一个小范围的内存，可以被分配（由应用程序拥有），释放（由glibc拥有），或与相邻的<code>chunk</code>组合成更大的范围。请注意，一个<code>chunk</code>是给应用程序的内存块的一个包装。每个<code>chunk</code>都存在于一个<code>heap</code>中，属于一个<code>arena</code>。</p>
+<p><strong>Memory</strong></p>
+<p>应用程序地址空间的一部分，通常由 RAM 或 swap 来支持。</p>
 <p>Note that, in this document, we only refer to "memory" as a generic term. While there is some code in glibc's malloc to work with the Linux kernel (or other OS) to hint at what memory should be mapped/backed and what can be returned to the kernel, such discrimination between "real memory" and "virtual memory" is irrelevant to the discussion herein, unless explicitly called out.</p>
-<h2 id="what-is-a-chunk">What is a Chunk?<a class="headerlink" href="#what-is-a-chunk" title="Permanent link">&para;</a></h2>
-<p>Glibc's malloc is chunk-oriented. It divides a large region of memory (a "heap") into chunks of various sizes. Each chunk includes meta-data about how big it is (via a <code>size</code> field in the chunk header), and thus where the adjacent chunks are. When a chunk is in use by the application, the only data that's "remembered" is the size of the chunk. When the chunk is free'd, the memory that used to be application data is re-purposed for additional arena-related information, such as pointers within linked lists, such that suitable chunks can quickly be found and re-used when needed. Also, the last word in a free'd chunk contains a copy of the chunk size (with the three LSBs set to zeros, vs the three LSBs of the size at the front of the chunk which are used for flags).</p>
-<p>Within the malloc library, a "chunk pointer" or <em>mchunkptr</em> does <em>not</em> point to the beginning of the chunk, but to the last word in the previous chunk - i.e. the first field in <code>mchunkptr</code> is not valid unless you know the previous chunk is free.</p>
-<p>Since all chunks are multiples of 8 bytes, the 3 LSBs of the chunk size can be used for flags. These three flags are defined as follows:</p>
-<ul>
-<li>A (0x04)</li>
-</ul>
-<p>Allocated Arena - the main arena uses the application's heap. Other arenas use mmap'd heaps. To map a chunk to a heap, you need to know which case applies. If this bit is 0, the chunk comes from the main arena and the main heap. If this bit is 1, the chunk comes from mmap'd memory and the location of the heap can be computed from the chunk's address.</p>
-<ul>
-<li>M (0x02)</li>
-</ul>
-<p>MMap'd chunk - this chunk was allocated with a single call to <code>mmap</code> and is not part of a heap at all.</p>
-<ul>
-<li>P (0x01)</li>
-</ul>
-<p>Previous chunk is in use - if set, the previous chunk is still being used by the application, and thus the <code>prev_size</code> field is invalid. Note - some chunks, such as those in fastbins (see below) will have this bit set despite being free'd by the application. This bit really means that the previous chunk should not be considered a candidate for coalescing - it's "in use" by either the application or some other optimization layered atop malloc's original code <img alt=":-)" src="https://sourceware.org/moin_static1910/modern/img/smile.png" /></p>
-<p>In order to ensure that a chunk's payload area is large enough to hold the overhead needed by malloc, the minimum size of a chunk is <code>4*sizeof(void*)</code> (unless <code>size_t</code> is not the same size as <code>void*</code>). The minimum size may be larger if the ABI of the platform requires additional alignment. Note that <code>prev_size</code> does not increase the minimum chunk size to <code>5*sizeof(void*)</code> because when the chunk is small the <code>bk_nextsize</code> pointer is unused, and when the chunk is large enough to use it there is more than enough space at the end.</p>
-<table>
-<thead>
-<tr>
-<th>In-use Chunk</th>
-<th>Free Chunk</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>Note that, since chunks are adjacent to each other in memory, if you know the address of the first chunk (lowest address) in a heap, you can iterate through all the chunks in the heap by using the size information, but only by increasing address, although it may be difficult to detect when you've hit the last chunk in the heap.</p>
-<p>Allocated heaps are always aligned to a power-of-two address. Thus, when a chunk is in an allocated heap (i.e. the A bit is set), the address of the <code>heap_info</code> for that heap can be computed based on the address of the chunk:</p>
-<table>
-<thead>
-<tr>
-<th>Chunk to Heap</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="arenas-and-heaps">Arenas and Heaps<a class="headerlink" href="#arenas-and-heaps" title="Permanent link">&para;</a></h2>
-<p>In order to efficiently handle multi-threaded applications, glibc's malloc allows for more than one region of memory to be active at a time. Thus, different threads can access different regions of memory without interfering with each other. These regions of memory are collectively called "arenas". There is one arena, the "main arena", that corresponds to the application's initial heap. There's a static variable in the malloc code that points to this arena, and each arena has a <code>next</code> pointer to link additional arenas.</p>
-<p>As pressure from thread collisions increases, additional arenas are created via <code>mmap</code> to relieve the pressure. The number of arenas is capped at eight times the number of CPUs in the system (unless the user specifies otherwise, see <code>mallopt</code>), which means a heavily threaded application will still see some contention, but the trade-off is that there will be less fragmentation.</p>
-<p>Each arena structure has a mutex in it which is used to control access to that arena. Note that some operations, such as access to the fastbins, can be done with atomic operations and do not need to lock the arena. All other operations require that the thread take a lock on the arena. Contention for this mutex is the reason why multiple arenas are created - threads assigned to different arenas need not wait for each other. Threads will automatically switch to unused (unlocked) arenas if contention requires it.</p>
-<p>Each arena obtains memory from one or more heaps. The main arena uses the program's initial heap (starting right after .bss et al). Additional arenas allocate memory for their heaps via mmap, adding more heaps to their list of heaps as older heaps are used up. Each arena keeps track of a special "top" chunk, which is typically the biggest available chunk, and also refers to the most recently allocated heap.</p>
-<p>Memory for allocated arenas is, conveniently, taken from the initial heap for that arena:</p>
-<table>
-<thead>
-<tr>
-<th>Heaps and Arenas</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>Within each arena, chunks are either in use by the application or they're free (available). In-use chunks are not tracked by the arena. Free chunks are stored in various lists based on size and history, so that the library can quickly find suitable chunks to satisfy allocation requests. The lists, called "bins", are:</p>
-<ul>
-<li>Fast</li>
-</ul>
-<p>Small chunks are stored in size-specific bins. Chunks added to a fast bin ("fastbin") are not combined with adjacent chunks - the logic is minimal to keep access fast (hence the name). Chunks in the fastbins may be moved to other bins as needed. Fastbin chunks are stored in a single linked list, since they're all the same size and chunks in the middle of the list need never be accessed.</p>
-<ul>
-<li>Unsorted</li>
-</ul>
-<p>When chunks are free'd they're initially stored in a single bin. They're sorted later, in malloc, in order to give them one chance to be quickly re-used. This also means that the sorting logic only needs to exist at one point - everyone else just puts free'd chunks into this bin, and they'll get sorted later. The "unsorted" bin is simply the first of the regular bins.</p>
-<ul>
-<li>Small</li>
-</ul>
-<p>The normal bins are divided into "small" bins, where each chunk is the same size, and "large" bins, where chunks are a range of sizes. When a chunk is added to these bins, they're first combined with adjacent chunks to "coalesce" them into larger chunks. Thus, these chunks are never adjacent to other such chunks (although they may be adjacent to fast or unsorted chunks, and of course in-use chunks). Small and large chunks are doubly-linked so that chunks may be removed from the middle (such as when they're combined with newly free'd chunks).</p>
-<ul>
-<li>Large</li>
-</ul>
-<p>A chunk is "large" if its bin may contain more than one size. For small bins, you can pick the first chunk and just use it. For large bins, you have to find the "best" chunk, and possibly split it into two chunks (one the size you need, and one for the remainder).</p>
-<table>
-<thead>
-<tr>
-<th>Free, Unsorted, Small, and Large Bin Chains</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>Note: in the diagram above (and below), all the pointers are to a "chunk" (<code>mchunkptr</code>). Since the bins are not chunks (they're arrays of <code>fwd</code>/<code>bck</code> pointers), a hack is used to provide an <code>mchunkptr</code> to a chunk-like object which overlaps the bins "just right" so that the <code>mchunkptr</code>'s <code>fwd</code> and <code>bck</code> fields can be used to access the appropriate bin.</p>
-<p>Because of the need to find the "best" fit for large chunks, large chunks have an additional doubly-linked list linking the first of each size in the list, and chunks are sorted by size, largest through smallest. This allows malloc to quickly scan for the first chunk that's big enough. Note: if multiple chunks of a given size are present, the <em>second</em> one is typically the chosen one, so that the next-size linked list need not be adjusted. Chunks inserted into the list are added after a chunk of the same size, for the same reason.</p>
-<table>
-<thead>
-<tr>
-<th>Large Bin "Next Size" Chains</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="thread-local-cache-tcache">Thread Local Cache (tcache)<a class="headerlink" href="#thread-local-cache-tcache" title="Permanent link">&para;</a></h2>
+<p>注意，在本文中，我们只把 "memory" 作为一个通用术语。虽然在 glibc 的 malloc 中有一些代码与 Linux 内核（或其他操作系统）合作，提示哪些内存应该被映射/备份，哪些可以返回给内核，但这种对 "real memory" 和 "virtual memory" 的区分与本文的讨论无关，除非被明确指出。</p>
+<h2 id="what-is-a-chunk"><a class="toclink" href="#what-is-a-chunk">What is a Chunk?</a><a class="headerlink" href="#what-is-a-chunk" title="Permanent link">&para;</a></h2>
+<p>Glibc 的 malloc 是面向<code>chunk</code>的。它将一个大的内存区域（a "heap"）分成不同大小的<code>chunk</code>。每个<code>chunk</code>包含关于自身大小的元数据（通过<code>chunk</code>头中的 size 字段），从而得出相邻的块在哪里。当一个<code>chunk</code>被应用程序使用时，唯一被“记住”的数据是该<code>chunk</code>的大小。当该<code>chunk</code>被释放时，之前用于应用程序数据的内存被重新用于另外的<code>arena</code>相关信息，如链表中的指针，这样就可以快速找到合适的<code>chunk</code>并在需要时再次使用。另外，被释放的<code>chunk</code>中的最后一个字包含该块的大小的拷贝（其中三个LSB被设置为零，而块前面的三个LSB则是用于标志的大小）。</p>
+<p>在malloc库中，"chunk pointer" 或 mchunkptr 并不指向<code>chunk</code>的开始，而是指向前一个<code>chunk</code>中的最后一个字--也就是说，除非你知道前一个<code>chunk</code>是空闲的，否则 mchunkptr 中的第一个字段是无效的。</p>
+<p>所有的<code>chunk</code>都是8的倍数，<code>chunk</code>中 size 字段的3个LSB可以用来做为标志位。三个标志位定义如下：</p>
+<p><strong>A(0x04)</strong></p>
+<p>已分配的<code>arena</code> -  main arena 使用应用程序的堆，其他<code>arena</code>使用<code>mmap</code>分配的堆，要把一个<code>chunk</code>映射到一个堆，我们需要知道什么场景适用，如果这个位为0，则该<code>chunk</code>属于 main arena  和主堆。如果这个位为1，则该<code>chunk</code>属于<code>mmap</code>分配的内存，堆的位置可以通过<code>chunk</code>的地址计算出来。</p>
+<p><strong>M(0x02)</strong></p>
+<p><code>mmap</code>分配的<code>chunk</code> - 这个<code>chunk</code>是通过调用<code>mmap</code>分配的，不属于堆的一部分。</p>
+<p><strong>P(0x01)</strong></p>
+<p>前一个<code>chunk</code>正在使用 - 如果这个位被设置，则说明前一个<code>chunk</code>正在被应用程序使用，因此 prev_size 字段无效。注意，一些<code>chunk</code>，比如 fastbins（见下文）中的<code>chunk</code>，尽管被应用程序释放，这个位仍会被设置。这个位真正含义是前一个<code>chunk</code>不应该被当做下一次分配内存时的候选 - 它正被其应用程序或 malloc 源码层一些优化使用。</p>
+<p>为了确保一个<code>chunk</code>的 payload 域足够大，以满足 malloc 所需的开销，一个<code>chunk</code>的最小大小是 4*sizeof(void*)（除非 size_t 与 void* 的尺寸不同）。如果平台的 ABI 要求额外的对齐方式，最小大小值可能会更大。请注意，prev_size 不会将最小<code>chunk</code>的大小增加到 5*sizeof(void*)，因为当<code>chunk</code>很小的时候，bk_nextsize 指针是未使用的，当<code>chunk</code>足够大到可以使用它的时候，这时<code>chunk</code>尾部也有足够的空间了。</p>
+<p><img alt="image-20210704132549406" src="../images/MallocInternals/image-20210704132549406.png" /></p>
+<p>注意，由于<code>chunk</code>在内存中是相邻的，如果你知道堆中第一个<code>chunk</code>的地址（最低地址），你可以通过 size 来遍历堆中的所有块，但只能通过增加地址来实现，尽管可能很难判断出什么时候遍历到最后一个<code>chunk</code>。</p>
+<p>已分配的堆总是以2的次方来地址对齐。因此，当一个<code>chunk</code>在分配的堆中时（即A位被设置），该堆的 heap_info 的地址可以根据该<code>chunk</code>的地址来计算：</p>
+<p><img alt="image-20210704144117639" src="../images/MallocInternals/image-20210704144117639.png" /></p>
+<h2 id="arenas-and-heaps"><a class="toclink" href="#arenas-and-heaps">Arenas and Heaps</a><a class="headerlink" href="#arenas-and-heaps" title="Permanent link">&para;</a></h2>
+<p>为了有效地处理多线程应用程序，glibc 的 malloc 允许在同一时间激活多个内存区域。因此，不同的线程可以访问不同的内存区域而互不干扰。这些内存区域被统称为 "arenas"。有一个 "main arena"，它与应用程序的初始堆相对应。在malloc代码中，有一个静态变量指向这个<code>arena</code>，每个<code>arena</code>都有一个 next 指针来连接其他<code>arena</code>。</p>
+<p>随着线程碰撞压力的增加，额外的<code>arena</code>会通过<code>mmap</code>创建来缓解压力。<code>arena</code>的数量上限是系统中  CPU 数量的8倍（除非用户自定义，见 "mallopt"），这意味着一个大量线程的应用程序仍然会存在一些竞争，但权衡之下，碎片会更少。</p>
+<p>每个<code>arena</code>结构中都有一个 mutex，用来控制对该<code>arena</code>的访问。请注意，一些操作，例如对<code>fastbin</code>的访问，可以用原子操作完成，不需要锁定<code>arena</code>。其他的所有操作都需要线程在<code>arena</code>上加一个锁。对这个 mutex 的竞争是创建多个<code>arena</code>的原因—分配到不同<code>arena</code>的线程不需要互相等待。如果需要竞争，线程会自动切换到未使用的（未锁定的）<code>arena</code>。</p>
+<p>每个<code>arena</code>从一个或多个堆中获取内存，main arena 使用程序的初始堆（从 .bss 等之后开始）。额外的<code>arena</code>通过<code>mmap</code>为它们的堆分配内存，当旧的堆被用完时，将更多的堆添加到它们的堆的列表中。每个<code>arena</code>都会跟踪一个特殊的 "top" <code>chunk</code>，这通常是最大的可用<code>chunk</code>，也是指最近分配的堆。</p>
+<p>分配给<code>arena</code>的内存可以很方便的从该<code>arena</code>的初始堆中获取：</p>
+<p><img alt="image-20210704153703767" src="../images/MallocInternals/image-20210704153703767.png" /></p>
+<p>在每个<code>arena</code>，<code>chunk</code>要么被应用程序使用要么空闲。<code>arena</code>不会跟踪正在使用的<code>chunk</code>，空闲的<code>chunk</code>根据不同的大小和**历史**保存在不同的链表中。因此**库**能快速找到合适的<code>chunk</code>来满足分配请求。这些链表称作 "bins"：</p>
+<p><strong>Fast</strong></p>
+<p>较小的<code>chunk</code>保存在特定大小的 bin 中。添加到 fast bin 中<code>chunk</code>不会与相邻的<code>chunk</code>结合在一起—<strong>这个逻辑能保证快速访问</strong>（因此得名 fastbin），fastbin 中的<code>chunk</code>可以根据需要被移动到其他 bins 中。fastbin 中的<code>chunk</code>被保存在一个单链表中，因为它们大小一致并且链表中间的<code>chunk</code>永远不需要被访问。</p>
+<p><strong>Unsorted</strong></p>
+<p>当<code>chunk</code>被释放时，最初被存在一个单一的 bin 中，它们稍后在malloc中被分类，以便给他们一个快速再重新使用的机会，这也意味着分类逻辑只需要存在于一个点上—其他人只需将释放的<code>chunk</code>放入这个 bin，这些<code>chunk</code>稍后便会被分类。</p>
+<p><strong>Small</strong></p>
+<p>正常的 bins 被分为 "small" bins 和 "large" bins，small bins中的<code>chunk</code>大小一致，lagre bins 中的<code>chunk</code>大小都有一定的范围。当<code>chunk</code>被添加到这些 bin 中时，首先会与它相邻的<code>chunk</code>合并成更大的<code>chunk</code>，因此这些<code>chunk</code>永远不会与其他这类<code>chunk</code>相邻（尽管它们可能与 fast bin 和 unsorted bin 以及正在使用中的<code>chunk</code>相邻）。small chunks 和 lagre chunks 都是双向链表以便<code>chunk</code>可以从中间删除（比如，当它们与新释放的<code>chunk</code>结合时）。</p>
+<p><strong>Large</strong></p>
+<p>如果一个<code>chunk</code>所在 bin 可以包括不同大小的<code>chunk</code>，那么该<code>chunk</code>就是 "large"。对于 small bins，你可以选择第一个<code>chunk</code>并直接使用。对于 large bins，必须找到 "best" chunk，并可能将其分割成两个<code>chunk</code>（一个是你需要的大小，一个是剩余的大小）。</p>
+<p><img alt="image-20210704163514111" src="../images/MallocInternals/image-20210704163514111.png" /></p>
+<p>注意：在上图和下图中，所有的指针都指向<code>chunk</code>（mchunkptr）。由于 bins 不是 chunks（它们是 fwd/bck 指针的数组）， 一个被用来提供一个 mchunkptr 到一个类似<code>chunk</code>的对象的 hack方法，它与 bin "恰好 "重叠，这样 mchunkptr 的 fwd 和 bck 字段就可以用来访问合适的 bin。</p>
+<p>对于 large chunks 需要找到最合适的 chunk。large chunks 有一个额外的双向链表，用来连接链表中每种大小的第一个<code>chunk</code>，并且按<code>chunk</code>大小排序，从大到小。这使得 malloc 能够快速扫描出第一个足够大的<code>chunk</code>。注意：如果存在多个给定大小的<code>chunk</code>，第二个<code>chunk</code>通常是被选中的，这样就不需要调整 next-size 的链表。出于同样的原因，插入到链表中的<code>chunk</code>被添加到相同大小的<code>chunk</code>之后。</p>
+<p><img alt="image-20210704224709722" src="../images/MallocInternals/image-20210704224709722.png" /></p>
+<h2 id="thread-local-cache-tcache"><a class="toclink" href="#thread-local-cache-tcache">Thread Local Cache (tcache)</a><a class="headerlink" href="#thread-local-cache-tcache" title="Permanent link">&para;</a></h2>
 <p>While this malloc is aware of multiple threads, that's pretty much the extent of its awareness - it knows there are multiple threads. There is no code in this malloc to optimize it for NUMA architectures, coordinate thread locality, sort threads by core, etc. It is assumed that the kernel will handle those issues sufficiently well.</p>
-<p>Each thread has a thread-local variable that remembers which arena it last used. If that arena is in use when a thread needs to use it the thread will block to wait for the arena to become free. If the thread has never used an arena before then it may try to reuse an unused one, create a new one, or pick the next one on the global list.</p>
+<p>虽然这个malloc知道有多个线程，但这几乎是它的意识范围--它知道有多个线程。这个malloc中没有任何代码可以针对NUMA架构进行优化，协调线程位置，按核对线程进行分类，等等。我们假设内核会很好地处理这些问题。</p>
+<p>每个线程都有一个 thread-local 变量，记录它最后使用的<code>arena</code>。如果该<code>arena</code>正在使用，当一个线程需要使用该<code>arena</code>时，那么该线程将阻塞以等待该<code>arena</code>被释放。如果该线程之前前从未使用过<code>arena</code>，那么它可能会尝试重新使用一个未使用的<code>arena</code>，创建一个新的，或者在全局链表中选择下一个。</p>
 <p>Each thread has a per-thread cache (called the <em>tcache</em>) containing a small collection of chunks which can be accessed without needing to lock an arena. These chunks are stored as an array of singly-linked lists, like fastbins, but with links pointing to the payload (user area) not the chunk header. Each bin contains one size chunk, so the array is indexed (indirectly) by chunk size. Unlike fastbins, the tcache is limited in how many chunks are allowed in each bin (<code>tcache_count</code>). If the tcache bin is empty for a given requested size, the next larger sized chunk is not used (could cause internal fragmentation), instead the fallback is to use the normal malloc routines i.e. locking the thread's arena and working from there.</p>
-<table>
-<thead>
-<tr>
-<th>Per-thread Cache (tcache)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="malloc-algorithm">Malloc Algorithm<a class="headerlink" href="#malloc-algorithm" title="Permanent link">&para;</a></h2>
-<p>In a nutshell, malloc works like this:</p>
+<p>每个线程都有一个本地缓存（称为 <em>tcache</em>），其中包含一个小型的<code>chunk</code>集合，可以在不需要锁定<code>arena</code>的情况下进行访问。这些<code>chunk</code>被存储为一个单链表数组，就像 fastbins 一样，但指针指向 payload（user area）而不是<code>chunk</code>头。每个 bin 包含一类大小的chunk，所以这个数组是按<code>chunk</code>大小来索引的（间接地）。与 fastbins 不同，tcache 限制了在每个 bin 中允许有多少个chunk（<code>tcache_count</code>）。<strong>如果 tcache bin 在给定请求大小的情况下是空的</strong>，则不会使用下一个更大的<code>chunk</code>（可能会导致内部碎片），相反，退而求其次，使用正常的 malloc 例程，即锁定线程的<code>arena</code>并从那里开始工作。</p>
+<p><img alt="reeeee" src="../images/MallocInternals/image-20210704224815249.png" /></p>
+<h2 id="malloc-algorithm"><a class="toclink" href="#malloc-algorithm">Malloc Algorithm</a><a class="headerlink" href="#malloc-algorithm" title="Permanent link">&para;</a></h2>
+<p>简而言之，malloc工作原理如下：</p>
 <ul>
-<li>If there is a suitable (exact match only) chunk in the tcache, it is returned to the caller. No attempt is made to use an available chunk from a larger-sized bin.</li>
-<li>If the request is large enough, <code>mmap()</code> is used to request memory directly from the operating system. Note that the threshold for mmap'ing is dynamic, unless overridden by M_MMAP_THRESHOLD (see mallopt() documentation), and there may be a limit to how many such mappings there can be at one time.</li>
-<li>If the appropriate fastbin has a chunk in it, use that. If additional chunks are available, also pre-fill the tcache.</li>
-<li>If the appropriate smallbin has a chunk in it, use that, possibly pre-filling the tcache here also.</li>
-<li>If the request is "large", take a moment to take everything in the fastbins and move them to the unsorted bin, coalescing them as you go.</li>
-<li>Start taking chunks off the unsorted list, and moving them to small/large bins, coalescing as you go (note that this is the only place in the code that puts chunks into the small/large bins). If a chunk of the right size is seen, use that.</li>
-<li>If the request is "large", search the appropriate large bin, and successively larger bins, until a large-enough chunk is found.</li>
-<li>If we still have chunks in the fastbins (this may happen for "small" requests), consolidate those and repeat the previous two steps.</li>
-<li>Split off part of the "top" chunk, possibly enlarging "top" beforehand.</li>
+<li>
+<p>如果 tcache 有合适（仅完全匹配）的<code>chunk</code>，则返回该<code>chunk</code>给调用方。不会尝试使用更大尺寸的 bin 中的可用<code>chunk</code>。</p>
+</li>
+<li>
+<p>如果请求的内存足够大，则使用<code>mmap()</code>直接向操作系统申请内存。注意，<code>mmap</code>的阈值是动态的，除非被 M_MMAP_THRESHOLD 覆盖（参见 mallopt() 文档），and there may be a limit to how many such mappings there can be at one time</p>
+</li>
+<li>如果相应的 fastbin 中存在<code>chunk</code>，则使用该<code>chunk</code>，额外的可用<code>chunk</code>可以先填充到 tcache。</li>
+<li>如果相应的 smallbin 中存在chunk，则使用该<code>chunk</code>，同时可能也会在这里预先填充 tcache。</li>
+<li>如果请求是 "large" 的，会花些时间把 fastbin 里的所有内容都移到 unsorted bin 中，边移动边合并。</li>
+<li>开始从 unsorted list 中取出<code>chunk</code>，并将它们移动到 small/large bin 中，边移动边合并（注意，这是代码中唯一将<code>chunks</code>放入 small/large bin 的地方）。如找到一个大小合适的<code>chunk</code>，就使用这个<code>chunk</code>。</li>
+<li>如果请求是 "large" 的，则搜索相应的 large bin，以及逐渐增大的 large bin，直到找到一个足够大的<code>chunk</code>。</li>
+<li>如果在 fastbins 中仍存在<code>chunk</code>（这可能发生在 "small" 请求中），合并这些<code>chunk</code>并重复前两个步骤。</li>
+<li>分离出 "top" 的一部分，可能事先扩大 "top" 的范围????。Split off part of the "top" chunk, possibly enlarging "top" beforehand.</li>
 </ul>
-<p>For an over-aligned malloc, such as <code>valloc</code>, <code>pvalloc</code>, or <code>memalign</code>, an overly-large chunk is located (using the malloc algorithm above) and divided into two or more chunks in such a way that most of the chunk is now suitably aligned (and returned to the caller), and the excess before and after that portion is returned to the unsorted list to be re-used later.</p>
-<h2 id="free-algorithm">Free Algorithm<a class="headerlink" href="#free-algorithm" title="Permanent link">&para;</a></h2>
-<p>Note that, in general, "freeing" memory does not actually return it to the operating system for other applications to use. The <code>free()</code> call marks a chunk of memory as "free to be reused" by the application, but from the operating system's point of view, the memory still "belongs" to the application. However, if the top chunk in a heap - the portion adjacent to unmapped memory - becomes large enough, some of that memory may be unmapped and returned to the operating system.</p>
-<p>In a nutshell, free works like this:</p>
+<p>对于 over-aligned 的 malloc，如 valloc、pvalloc 或 memalign，一个过大的<code>chunk</code>被定位（使用上面的malloc算法）并分成两个或更多的块，这样的方式使得大部分的<code>chunk</code>现在被适当的对齐（并返回给调用者），而该部分前后的多余部分被返回到 unsorted list 中，以便以后再使用。</p>
+<h2 id="free-algorithm"><a class="toclink" href="#free-algorithm">Free Algorithm</a><a class="headerlink" href="#free-algorithm" title="Permanent link">&para;</a></h2>
+<p>注意，一般来说，“释放”内存实际上并没有把它返回给操作系统供其他应用使用。<code>free()</code>调用标记一块内存为空闲的将被应用程序使用的，但是从操作系统角度来看，该内存仍然属于应用程序。然而，如果堆中的顶部<code>chunk</code>--与未映射的内存相邻的部分--变得足够大，其中一些内存可能会被取消映射并返回给操作系统。                                                                                                                                                                                                                             </p>
+<p>简而言之，free 工作原理如下：</p>
 <ul>
-<li>If there is room in the tcache, store the chunk there and return.</li>
-<li>If the chunk is small enough, place it in the appropriate fastbin.</li>
+<li>如果是 tcache 中有空间，则保存该<code>chunk</code>至 tcache 中并返回。</li>
+<li>
+<p>如果<code>chunk</code>足够小，就放在合适的 fastbin 中。</p>
+</li>
+<li>
+<p>如果<code>chunk</code>是 mmap 的，则 munmap 掉。</p>
+</li>
 <li>If the chunk was mmap'd, munmap it.</li>
-<li>See if this chunk is adjacent to another free chunk and coalesce if it is.</li>
-<li>Place the chunk in the unsorted list, unless it's now the "top" chunk.</li>
+<li>如果这个<code>chunk</code>和其他空闲<code>chunk</code>相邻，就进行合并。</li>
+<li>将该块放在 unsorted 的列表中，除非它现在是 "top" 的<code>chunk</code>。</li>
+<li>如果该<code>chunk</code>足够大，就合并任何 fastbins，看看顶部的<code>chunk</code>是否足够大，以便将一些内存还给系统。请注意，出于性能的考虑，这一步可能会被推迟，在malloc或其他调用中发生。</li>
 <li>If the chunk is large enough, coalesce any fastbins and see if the top chunk is large enough to give some memory back to the system. Note that this step might be deferred, for performance reasons, and happen during a malloc or other call.</li>
 </ul>
-<h2 id="realloc-algorithm">Realloc Algorithm<a class="headerlink" href="#realloc-algorithm" title="Permanent link">&para;</a></h2>
-<p>Note that realloc of NULL and realloc to zero size are handled separately and as per the relevant specs.</p>
-<p>In a nutshell, realloc works like this:</p>
-<p><em>For MMAP'd chunks...</em></p>
-<p>Allocations that are serviced via individual <code>mmap</code> calls (i.e. large ones) are realloc'd by <code>mremap()</code> if available, which may or may not result in the new memory being at a different address than the old memory, depending on what the kernel does.</p>
-<p>If the system does not support <code>munmap()</code> and the new size is smaller than the old size, nothing happens and the old address is returned, else a malloc-copy-free happens.</p>
-<p><em>For arena chunks...</em></p>
+<h2 id="realloc-algorithm"><a class="toclink" href="#realloc-algorithm">Realloc Algorithm</a><a class="headerlink" href="#realloc-algorithm" title="Permanent link">&para;</a></h2>
+<pre class="highlight"><code class="language-c">void *realloc( void *ptr, size_t new_size );</code></pre>
+<p>请注意，对于参数 ptr 为 NULL 和 new_size 为0 是区分处理的，并按照相关的规范。</p>
+<p>简而言之，realloc 工作原理如下:</p>
+<p><em>对于 MMAP'd chunks......</em></p>
+<p>通过 mmap 调用来分配，通过 mremap() 重新分配（如果支持的话）。这样可能会或者不会导致新的内存地址和旧的内存地址不同，这取决与内核的实现。</p>
+<p>如果系统不支持 munmap() 并且 new_size 比原来的内存大小更小，则不会做任何事并且会返回原来的内存地址，否则会发生 malloc-copy-free。</p>
+<p><em>对于 arena chunks......</em></p>
 <ul>
+<li>如果分配的大小被减少到足够容纳，那么这个<code>chunk</code>被拆分成两个<code>chunk</code>。前半部分（有原来内存地址）被返回，后半部分被作为空闲块返回给<code>arena</code>。轻微减少被视为相同大小。</li>
 <li>If the size of the allocation is being reduced by enough to be "worth it", the chunk is split into two chunks. The first half (which has the old address) is returned, and the second half is returned to the arena as a free chunk. Slight reductions are treated as "the same size".</li>
+<li>如果分配正在增长，则检查下一个（相邻的）<code>chunk</code>。如果它是空闲的，或者是 "top" 块（代表堆的可扩展部分），并且足够大，那么该块和当前块被合并，产生一个足够大的块，可能被分割（如上）。在这种情况下，旧的指针被返回。</li>
 <li>If the allocation is growing, the next (adjacent) chunk is checked. If it is free, or the "top" block (representing the expandable part of the heap), and large enough, then that chunk and the current are merged, producing a large-enough block which can be possibly split (as above). In this case, the old pointer is returned.</li>
 <li>If the allocation is growing and there's no way to use the existing/following chunk, then a malloc-copy-free sequence is used.</li>
 </ul>
-<h2 id="switching-arenas">Switching arenas<a class="headerlink" href="#switching-arenas" title="Permanent link">&para;</a></h2>
+<h2 id="switching-arenas"><a class="toclink" href="#switching-arenas">Switching arenas</a><a class="headerlink" href="#switching-arenas" title="Permanent link">&para;</a></h2>
 <p>The arena to which a thread is attached is generally viewed as an invariant that does not change over the lifetime of the process. This invariant, while useful for explaining general concepts, is not true. The scenario for changing arenas looks like this:</p>
 <ul>
 <li>Thread fails to allocate memory from the attached arena.</li>
@@ -837,7 +246,7 @@
 <li>If previously using a non-main arena with <code>mmap</code>'d heaps the thread is switched via <code>arena_get_retry</code> to the main arena with an <code>sbrk</code>-based heap, or switched to non-main arena (from free list or a new one) if previously using the main arena. As an optimization this is not done if the process is single threaded, and we fail at this point returning <code>ENOMEM</code> (it is assumed that if <code>sbrk</code> did not work, and we tried <code>mmap</code> to extend the main arena, that a non-main arena will not work either).</li>
 </ul>
 <p>Note that a thread may change frequently between arenas in low-memory conditions, switching from main-arena which <code>sbrk</code>-based to a non-main arena which is <code>mmap</code>-based, all in an attempt to find a heap with enough space to satisfy the allocation.</p>
-<h2 id="platform-specific-thresholds-and-constants">Platform-specific Thresholds and Constants<a class="headerlink" href="#platform-specific-thresholds-and-constants" title="Permanent link">&para;</a></h2>
+<h2 id="platform-specific-thresholds-and-constants"><a class="toclink" href="#platform-specific-thresholds-and-constants">Platform-specific Thresholds and Constants</a><a class="headerlink" href="#platform-specific-thresholds-and-constants" title="Permanent link">&para;</a></h2>
 <p>These values are provided for entertainment purposes only, and are not guarateed to be correct, but they should have been at one point, at least in general.</p>
 <table>
 <thead>
@@ -905,90 +314,90 @@
 </tr>
 </tbody>
 </table>
-<h2 id="tbd">TBD<a class="headerlink" href="#tbd" title="Permanent link">&para;</a></h2>
+<h2 id="tbd"><a class="toclink" href="#tbd">TBD</a><a class="headerlink" href="#tbd" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Tunables</li>
 <li>Remainder of API calls</li>
 </ul>
-<h2 id="colophon">Colophon<a class="headerlink" href="#colophon" title="Permanent link">&para;</a></h2>
-<p>The images in this document were created with <a href="https://sourceware.org/glibc/wiki/LibreOffice">LibreOffice</a> Draw. For each *.svg file, there is a *.odg file which is the source.</p>
-                
-              
-              
-                
-
-
-              
-            </article>
-          </div>
+<h2 id="colophon"><a class="toclink" href="#colophon">Colophon</a><a class="headerlink" href="#colophon" title="Permanent link">&para;</a></h2>
+<p>The images in this document were created with <a href="https://sourceware.org/glibc/wiki/LibreOffice">LibreOffice</a> Draw. For each *.svg file, there is a *.odg file which is the source.</p></div>
+            </div>
         </div>
-        
-      </main>
-      
-        
-<footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        <a href="../.." class="md-footer__link md-footer__link--prev" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                上一页
-              </span>
-              Home
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2021 MoyChen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/jquery-3.6.0.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
-          </div>
-        </a>
-      
-      
-        <a href="../../Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-footer__link md-footer__link--next" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                下一页
-              </span>
-              Go语言调试
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
             </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-          <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2021 MoyChen
-          </div>
-        
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
-        
-      </div>
-      
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-  </div>
-</footer>
-      
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
-    
-    
-      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
-      
-    
-  </body>
+</div>
+
+    </body>
 </html>

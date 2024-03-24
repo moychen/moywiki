@@ -1,629 +1,130 @@
-
-<!doctype html>
-<html lang="zh" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-      
-      
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
         <meta name="author" content="moychen">
-      
-      
         <link rel="canonical" href="https://moychen.github.io/moywiki/Golang/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/">
-      
-      <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
-    
-    
-      
+        <link rel="shortcut icon" href="../../img/favicon.ico">
         <title>Go程序是如何启动的 - MoyWiki</title>
-      
-    
-    
-      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
-      
-        
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
-        
-      
-    
-    
-    
-      
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
-      
-    
-    
-    
-    
-      
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
-  
-    
-    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
-    
-      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#go" class="md-skip">
-          跳转至
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-      <header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MoyWiki" class="md-header__button md-logo" aria-label="MoyWiki" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
 
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            MoyWiki
-          </span>
-        </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Go程序是如何启动的
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      <form class="md-header__option" data-md-component="palette">
-        
-          
-          
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" type="radio" name="__palette" id="__palette_1">
-          
-            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2m10-3a5 5 0 0 1 5 5 5 5 0 0 1-5 5H7a5 5 0 0 1-5-5 5 5 0 0 1 5-5h10M7 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3h10a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7z"/></svg>
-            </label>
-          
-        
-          
-          
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="red" type="radio" name="__palette" id="__palette_2">
-          
-            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg>
-            </label>
-          
-        
-      </form>
-    
-    
-    
-      <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-      </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
-      <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
-      </button>
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            正在初始化搜索引擎
-          </div>
-          <ol class="md-search-result__list"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-    
-    
-      <div class="md-header__source">
-        
-<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    moychen/moywiki
-  </div>
-</a>
-      </div>
-    
-  </nav>
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-tabs__inner md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">MoyWiki</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../CC%2B%2B/Index/" class="dropdown-item">C/C++</a>
+</li>
+                                    
+<li>
+    <a href="../Index/" class="dropdown-item">Golang</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../about/" class="nav-link">About</a>
+                            </li>
+                        </ul>
 
-  <li class="md-tabs__item">
-    <a href="../.." class="md-tabs__link">
-      Home
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  
-  
-  
-    
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../CC%2B%2B/MallocInternals/" class="md-tabs__link">
-        Language
-      </a>
-    </li>
-  
-
-  
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="../../about/" class="md-tabs__link">
-      About
-    </a>
-  </li>
-
-      
-    </ul>
-  </div>
-</nav>
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MoyWiki" class="md-nav__button md-logo" aria-label="MoyWiki" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
-
-    </a>
-    MoyWiki
-  </label>
-  
-    <div class="md-nav__source">
-      
-<a href="https://github.com/moychen/moywiki" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    moychen/moywiki
-  </div>
-</a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
-        Home
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
-      
-      <label class="md-nav__link" for="__nav_2">
-        Language
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Language" data-md-level="1">
-        <label class="md-nav__title" for="__nav_2">
-          <span class="md-nav__icon md-icon"></span>
-          Language
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
-      
-      <label class="md-nav__link" for="__nav_2_1">
-        C/C++
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="C/C++" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          C/C++
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../CC%2B%2B/MallocInternals/" class="md-nav__link">
-        Malloc Internals
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
-      
-      <label class="md-nav__link" for="__nav_2_2">
-        Golang
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Golang" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_2">
-          <span class="md-nav__icon md-icon"></span>
-          Golang
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/" class="md-nav__link">
-        Go语言调试
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../about/" class="md-nav__link">
-        About
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/moychen/moywiki" class="nav-link">moychen/moywiki</a>
+                            </li>
+                    </ul>
                 </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
     
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    理解可执行文件
-  </a>
-  
-    <nav class="md-nav" aria-label="理解可执行文件">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    程序构建过程
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    可执行文件
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#go_1" class="md-nav__link">
-    Go进程的启动和初始化
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    调度组件与调度循环
-  </a>
-  
-    <nav class="md-nav" aria-label="调度组件与调度循环">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    调度流程
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    生产者
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    消费者
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    处理阻塞
-  </a>
-  
-    <nav class="md-nav" aria-label="处理阻塞">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    可拦截的阻塞
-  </a>
-  
-    <nav class="md-nav" aria-label="可拦截的阻塞">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#channel-sendrecv" class="md-nav__link">
-    channel send/recv
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#timesleep" class="md-nav__link">
-    time.Sleep
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#select" class="md-nav__link">
-    select
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lock" class="md-nav__link">
-    lock
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io" class="md-nav__link">
-    网络IO
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    不可拦截的阻塞
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sysmon" class="md-nav__link">
-    sysmon
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    与调度有关的常见问题
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
             
-          
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
-                
-                
-                <h1 id="go">Go程序是如何启动的<a class="headerlink" href="#go" title="Permanent link">&para;</a></h1>
-<h2 id="_1">理解可执行文件<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<h3 id="_2">程序构建过程<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>$ go build -x go文件  <span class="c1"># -x 打印构建详细过程</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>$ go build -x demo.go
+            <li class="nav-item" data-level="1"><a href="#_1" class="nav-link"></a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#_2" class="nav-link">理解可执行文件</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#go" class="nav-link">Go进程的启动和初始化</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_5" class="nav-link">调度组件与调度循环</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_9" class="nav-link">处理阻塞</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_12" class="nav-link">与调度有关的常见问题</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="_1"><a class="toclink" href="#_1"></a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2"><a class="toclink" href="#_2">理解可执行文件</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3"><a class="toclink" href="#_3">程序构建过程</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">$ go build -x go文件  # -x 打印构建详细过程</code></pre>
+<pre class="highlight"><code class="language-txt">$ go build -x demo.go
 WORK=/tmp/go-build650300936
 mkdir -p $WORK/b001/
-cat &gt;$WORK/b001/importcfg &lt;&lt; &#39;EOF&#39; # internal
+cat &gt;$WORK/b001/importcfg &lt;&lt; 'EOF' # internal
 # import config
 packagefile fmt=/usr/local/go/pkg/linux_amd64/fmt.a
 packagefile runtime=/usr/local/go/pkg/linux_amd64/runtime.a
 EOF
 cd /root/moychen/demo
 -------------------------------编译-----------------------------------
-/usr/local/go/pkg/tool/linux_amd64/compile -o $WORK/b001/_pkg_.a -trimpath &quot;$WORK/b001=&gt;&quot; -p main -complete -buildid IHvcy5J3sPf6q7qSX-yU/IHvcy5J3sPf6q7qSX-yU -goversion go1.15.2 -D _/root/moychen/demo -importcfg $WORK/b001/importcfg -pack ./demo.go
+/usr/local/go/pkg/tool/linux_amd64/compile -o $WORK/b001/_pkg_.a -trimpath "$WORK/b001=&gt;" -p main -complete -buildid IHvcy5J3sPf6q7qSX-yU/IHvcy5J3sPf6q7qSX-yU -goversion go1.15.2 -D _/root/moychen/demo -importcfg $WORK/b001/importcfg -pack ./demo.go
 /usr/local/go/pkg/tool/linux_amd64/buildid -w $WORK/b001/_pkg_.a # internal
 cp $WORK/b001/_pkg_.a /root/.cache/go-build/5d/5d735f650ab1e82b957e556236d1f63ac6f76a8dcd5e347a1f7c98d556a8b37f-d # internal
-cat &gt;$WORK/b001/importcfg.link &lt;&lt; &#39;EOF&#39; # internal
+cat &gt;$WORK/b001/importcfg.link &lt;&lt; 'EOF' # internal
 packagefile command-line-arguments=$WORK/b001/_pkg_.a
 ...
 packagefile internal/race=/usr/local/go/pkg/linux_amd64/internal/race.a
@@ -634,9 +135,8 @@ cd .
 /usr/local/go/pkg/tool/linux_amd64/link -o $WORK/b001/exe/a.out -importcfg $WORK/b001/importcfg.link -buildmode=exe -buildid=VljoluUulGgW80qhU4WS/IHvcy5J3sPf6q7qSX-yU/CUJ3YEw9E6g_F0Y_-2iM/VljoluUulGgW80qhU4WS -extld=gcc $WORK/b001/_pkg_.a
 /usr/local/go/pkg/tool/linux_amd64/buildid -w $WORK/b001/exe/a.out # internal
 mv $WORK/b001/exe/a.out demo
-rm -r $WORK/b001/
-</code></pre></div>
-<h3 id="_3">可执行文件<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+rm -r $WORK/b001/</code></pre>
+<h3 id="_4"><a class="toclink" href="#_4">可执行文件</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>可执行文件在不同平台格式规范也不一致。以Linux下ELF（Executable and Linkable Format）为例，详细内容参考<a href="https://github.com/corkami/pics/blob/28cb0226093ed57b348723bc473cea0162dad366/binary/elf101/elf101.pdf[">ELF规范参考文档</a>，ELF文件主要组成部分有：</p>
 <blockquote>
 <ul>
@@ -647,44 +147,40 @@ rm -r $WORK/b001/
 </blockquote>
 <p><img alt="image-20210519180400990" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210519180400990.png" /></p>
 <p>如上图所示，通过ELF header中的 entry point 能够找到 Go 进程的执行入口。Linux下运行可执行文件的步骤大致如下：</p>
-<div class="highlight"><pre><span></span><code>graph LR;
-解析ELF-Header --&gt; 加载二进制文件内容至内存 --&gt; 从entry-point开始执行代码;
-</code></pre></div>
-<h2 id="go_1">Go进程的启动和初始化<a class="headerlink" href="#go_1" title="Permanent link">&para;</a></h2>
+<pre class="highlight"><code class="language-mermaid">graph LR;
+解析ELF-Header --&gt; 加载二进制文件内容至内存 --&gt; 从entry-point开始执行代码;</code></pre>
+<h2 id="go"><a class="toclink" href="#go">Go进程的启动和初始化</a><a class="headerlink" href="#go" title="Permanent link">&para;</a></h2>
 <p>生成二进制可执行文件后，启动时计算机通过执行二进制机器码指令运行程序，每执行一条语句pc寄存器就指向下一条指令。在 64 位平台上 pc 寄存器 = rip。</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// demo.go </span>
-<span class="kn">package</span> <span class="nx">main</span>
+<pre class="highlight"><code class="language-go">// demo.go 
+package main
 
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;fmt&quot;</span>
-<span class="p">)</span>
+import (
+    "fmt"
+)
 
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div>
+func main() {
+    fmt.Println("hello world")
+}</code></pre>
 <p>go build 生成可执行文件demo，然后通过readelf -h demo找到可执行文件demo的entry point找到程序入口，使用dlv调试程序。</p>
 <p><img alt="image-20210520210757578" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210520210757578.png" /></p>
 <p>中间省略一下没有用的信息。</p>
 <p><img alt="image-20210520211303257" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210520211303257.png" /></p>
 <p>从上图的结果来看go启动流程大致为：</p>
-<div class="highlight"><pre><span></span><code>graph TD;
-_rt0_amd64_linux --&gt; _rt0_amd64 --&gt; runtime.rt0_go; 
-</code></pre></div>
+<pre class="highlight"><code class="language-mermaid">graph TD;
+_rt0_amd64_linux --&gt; _rt0_amd64 --&gt; runtime.rt0_go; </code></pre>
 <p>runtime.rt0_go中主要工作有：</p>
-<div class="highlight"><pre><span></span><code>graph LR;
-argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初始化内部数据结构 --&gt; 开始执行main函数;
-</code></pre></div>
-<h2 id="_4">调度组件与调度循环<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<pre class="highlight"><code class="language-mermaid">graph LR;
+argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初始化内部数据结构 --&gt; 开始执行main函数;</code></pre>
+<h2 id="_5"><a class="toclink" href="#_5">调度组件与调度循环</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p><strong>G（goroutine）</strong>：⼀个计算任务。由需要执⾏的代码和其上下⽂组成，上下⽂包括：当前代码位置、栈顶、栈底地址、状态等。</p>
 <p><strong>M（machine）</strong>：系统线程，执⾏实体，想要在 CPU 上执⾏代码，必须有线程，与 C 语⾔中的线程相同，通过系统调⽤ clone 来创建。</p>
 <p><strong>P（processor）</strong>：虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷⼊休眠（后台监控线程除外），你也可以将其理解为⼀种 token，有这个 token，才有在物理 CPU 核心上执行的权利。</p>
-<h3 id="_5">调度流程<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h3 id="_6"><a class="toclink" href="#_6">调度流程</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>Go的调度流程实际上是一个生产-消费流程，当我们新增一个go routine的时候实际上是向runtime 调度组件中新增一个task。</p>
 <p><img alt="image-20210521163354177" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210521163354177.png" /></p>
-<h3 id="_6">生产者<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<h3 id="_7"><a class="toclink" href="#_7">生产者</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <p><img src="images/Go程序是如何启动的/image-20210521165029181.png" alt="image-20210521165029181" style="zoom:67%;" /></p>
-<h3 id="_7">消费者<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h3 id="_8"><a class="toclink" href="#_8">消费者</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
 <p><img alt="image-20210521165214744" src="../images/Go%E7%A8%8B%E5%BA%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E7%9A%84/image-20210521165214744.png" /></p>
 <blockquote>
 <ul>
@@ -693,7 +189,7 @@ argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初
 </ul>
 </blockquote>
 <p><img src="images/Go程序是如何启动的/image-20210521165441266.png" alt="image-20210521165441266" style="zoom: 50%;" /></p>
-<h2 id="_8">处理阻塞<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<h2 id="_9"><a class="toclink" href="#_9">处理阻塞</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
 <p>Go中阻塞大概有这么几种场景：</p>
 <blockquote>
 <ul>
@@ -705,13 +201,13 @@ argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初
 </ul>
 </blockquote>
 <p>当上述阻塞场景之一发生时，Go会将该goroutine挂起，不会阻塞Go的调度流程。挂起指的是调度组件会将该goroutine放入等待队列，待可执行时，待ready后再继续执行，不会占用线程。</p>
-<h3 id="_9">可拦截的阻塞<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
-<h4 id="channel-sendrecv">channel send/recv<a class="headerlink" href="#channel-sendrecv" title="Permanent link">&para;</a></h4>
-<h4 id="timesleep">time.Sleep<a class="headerlink" href="#timesleep" title="Permanent link">&para;</a></h4>
-<h4 id="select">select<a class="headerlink" href="#select" title="Permanent link">&para;</a></h4>
-<h4 id="lock">lock<a class="headerlink" href="#lock" title="Permanent link">&para;</a></h4>
-<h4 id="io">网络IO<a class="headerlink" href="#io" title="Permanent link">&para;</a></h4>
-<h3 id="_10">不可拦截的阻塞<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<h3 id="_10"><a class="toclink" href="#_10">可拦截的阻塞</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<h4 id="channel-sendrecv"><a class="toclink" href="#channel-sendrecv">channel send/recv</a><a class="headerlink" href="#channel-sendrecv" title="Permanent link">&para;</a></h4>
+<h4 id="timesleep"><a class="toclink" href="#timesleep">time.Sleep</a><a class="headerlink" href="#timesleep" title="Permanent link">&para;</a></h4>
+<h4 id="select"><a class="toclink" href="#select">select</a><a class="headerlink" href="#select" title="Permanent link">&para;</a></h4>
+<h4 id="lock"><a class="toclink" href="#lock">lock</a><a class="headerlink" href="#lock" title="Permanent link">&para;</a></h4>
+<h4 id="io"><a class="toclink" href="#io">网络IO</a><a class="headerlink" href="#io" title="Permanent link">&para;</a></h4>
+<h3 id="_11"><a class="toclink" href="#_11">不可拦截的阻塞</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
 <blockquote>
 <ul>
 <li>cgo</li>
@@ -719,57 +215,90 @@ argc/argv处理 --&gt; 全局m0/g0初始化 --&gt; 获取cpu核心数 --&gt; 初
 <li>⻓时间运⾏需要剥离 P 执⾏</li>
 </ul>
 </blockquote>
-<h3 id="sysmon">sysmon<a class="headerlink" href="#sysmon" title="Permanent link">&para;</a></h3>
+<h3 id="sysmon"><a class="toclink" href="#sysmon">sysmon</a><a class="headerlink" href="#sysmon" title="Permanent link">&para;</a></h3>
 <p>sysmon是runtime中的system monitor，具有高优先级，在专有线程中执行，并且不需要绑定P。</p>
 <p>checkdead：常见误解—这个可以检查死锁</p>
 <p>netpoll：inject g list to global run queue</p>
 <p>retake：如果syscall卡了很久，就把剥离（handoff p）</p>
 <p>​               如果用户g运行很久，那么发信号SIGURG抢占</p>
-<h2 id="_11">与调度有关的常见问题<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
-                
-              
-              
-                
-
-
-              
-            </article>
-          </div>
+<h2 id="_12"><a class="toclink" href="#_12">与调度有关的常见问题</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2></div>
+            </div>
         </div>
-        
-      </main>
-      
-        
-<footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-          <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2021 MoyChen
-          </div>
-        
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
-        
-      </div>
-      
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2021 MoyChen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/jquery-3.6.0.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-  </div>
-</footer>
-      
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.tabs"], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
-    
-    
-      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
-      
-    
-  </body>
+</div>
+
+    </body>
 </html>
