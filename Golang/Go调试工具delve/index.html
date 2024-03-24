@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <meta name="author" content="moychen">
-        <link rel="canonical" href="https://moychen.github.io/moywiki/Golang/Go%E8%AF%AD%E8%A8%80%E8%B0%83%E8%AF%95/">
+        <link rel="canonical" href="https://moychen.github.io/moywiki/Golang/Go%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7delve/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Go语言调试 - MoyWiki</title>
+        <title>Go调试工具delve (dlv) - MoyWiki</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -78,9 +78,29 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#go" class="nav-link">Go语言调试</a>
+            <li class="nav-item" data-level="1"><a href="#godelve-dlv" class="nav-link">Go调试工具delve (dlv)</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#delve-dlv" class="nav-link">delve (dlv)</a>
+            <li class="nav-item" data-level="2"><a href="#dlv" class="nav-link">dlv简介</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_1" class="nav-link">开始使用</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_4" class="nav-link">配置和历史命令</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_5" class="nav-link">调试命令</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_11" class="nav-link">常见问题</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_12" class="nav-link">参考文章</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -91,9 +111,8 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="go"><a class="toclink" href="#go">Go语言调试</a><a class="headerlink" href="#go" title="Permanent link">&para;</a></h1>
-<h2 id="delve-dlv"><a class="toclink" href="#delve-dlv">delve (dlv)</a><a class="headerlink" href="#delve-dlv" title="Permanent link">&para;</a></h2>
-<h3 id="dlv"><a class="toclink" href="#dlv">dlv简介</a><a class="headerlink" href="#dlv" title="Permanent link">&para;</a></h3>
+<h1 id="godelve-dlv"><a class="toclink" href="#godelve-dlv">Go调试工具delve (dlv)</a><a class="headerlink" href="#godelve-dlv" title="Permanent link">&para;</a></h1>
+<h2 id="dlv"><a class="toclink" href="#dlv">dlv简介</a><a class="headerlink" href="#dlv" title="Permanent link">&para;</a></h2>
 <p>Delve是一个用于Go程序的源码级调试器。Delve使你能够通过控制程序的执行、评估变量以及提供线程/<code>goroutine</code>状态、CPU寄存器状态等信息与你的程序进行交互。</p>
 <p>调试时可以使用<code>--</code>向你调试的程序传递可选标识，例如：</p>
 <pre class="highlight"><code class="language-bash">$ dlv exec ./hello -- server --config conf/config.toml</code></pre>
@@ -186,9 +205,9 @@
 <pre class="highlight"><code>dlv test [package]</code></pre>
 <p><strong>选项</strong></p>
 <pre class="highlight"><code>--output string   二进制文件的输出路径(default "debug.test")</code></pre>
-<h3 id="_1"><a class="toclink" href="#_1">开始使用</a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
-<h4 id="main"><a class="toclink" href="#main">调试main包</a><a class="headerlink" href="#main" title="Permanent link">&para;</a></h4>
-<p>我们要探讨的第一个CLI子命令是<code>debug</code>。如果你和你的`main'包在同一个目录下，这个子命令可以不需要参数运行。
+<h2 id="_1"><a class="toclink" href="#_1">开始使用</a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="main"><a class="toclink" href="#main">调试main包</a><a class="headerlink" href="#main" title="Permanent link">&para;</a></h3>
+<p>我们要探讨的第一个CLI子命令是<code>debug</code>。如果你和你的 <code>main</code> 包在同一个目录下，这个子命令可以不需要参数运行。
 否则，它需要指定包的路径。例如，基于下面这个项目的布局：</p>
 <pre class="highlight"><code>.
 ├── github.com/me/foo
@@ -216,7 +235,7 @@ Breakpoint 1 set at 0x49ecf3 for main.main() ./test.go:5
      6:     fmt.Println("delve test")
      7: }
 (dlv) </code></pre>
-<h4 id="_2"><a class="toclink" href="#_2">调试测试程序</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<h3 id="_2"><a class="toclink" href="#_2">调试测试程序</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <p>考虑到与上面相同的目录结构，你可以通过执行你的测试套件来调试你的代码。为此，你可以使用<code>dlv test</code>子命令，它需要与<code>dlv debug</code>一样的可选包路径，如果不传递任何参数，则会构建当前目录的包。</p>
 <pre class="highlight"><code class="language-bash">$ dlv test github.com/me/foo/pkg/baz
 Type 'help' for list of commands.
@@ -237,12 +256,12 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 <p>正如你所看到的，我们开始调试测试二进制，通过<code>funcs</code>命令找到我们的测试函数。<code>funcs</code>命令找到了我们的测试函数，该命令使用一个regexp来过滤函数列表，设置一个断点，然后继续执行，直到我们命中这个断点。</p>
 <p>可以使用<code>dlv help</code>获取更多关于子命令的信息，一旦进入调试会话，你可以通过键入<code>help</code>看到所有可用的命令。
 就可以看到所有可用的命令。</p>
-<h4 id="_3"><a class="toclink" href="#_3">调试编译器</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
-<h3 id="_4"><a class="toclink" href="#_4">配置和历史命令</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<h3 id="_3"><a class="toclink" href="#_3">调试编译器</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<h2 id="_4"><a class="toclink" href="#_4">配置和历史命令</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>如果<code>$XDG_CONFIG_HOME</code>被设置，那么配置和命令历史文件就位于<code>$XDG_CONFIG_HOME/dlv</code>。否则，它们在Linux上位于<code>$HOME/.config/dlv</code>，在其他系统上位于<code>$HOME/.dlv</code>。</p>
 <p>配置文件<code>config.yml</code>包含所有可配置的选项和它们的默认值。命令历史被保存在<code>.dbg_history</code>中。</p>
-<h3 id="_5"><a class="toclink" href="#_5">调试命令</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<h4 id="_6"><a class="toclink" href="#_6">运行程序</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<h2 id="_5"><a class="toclink" href="#_5">调试命令</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="_6"><a class="toclink" href="#_6">运行程序</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -285,7 +304,7 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="_7"><a class="toclink" href="#_7">操作断点</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<h3 id="_7"><a class="toclink" href="#_7">操作断点</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -332,7 +351,7 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="_8"><a class="toclink" href="#_8">查看程序变量和内存</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<h3 id="_8"><a class="toclink" href="#_8">查看程序变量和内存</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -379,7 +398,7 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="goroutine"><a class="toclink" href="#goroutine">查看和切换goroutine和线程</a><a class="headerlink" href="#goroutine" title="Permanent link">&para;</a></h4>
+<h3 id="goroutine"><a class="toclink" href="#goroutine">查看和切换goroutine和线程</a><a class="headerlink" href="#goroutine" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -406,7 +425,7 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="_9"><a class="toclink" href="#_9">查看调用堆栈和选择栈帧</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<h3 id="_9"><a class="toclink" href="#_9">查看调用堆栈和选择栈帧</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -437,7 +456,7 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="_10"><a class="toclink" href="#_10">其他命令</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<h3 id="_10"><a class="toclink" href="#_10">其他命令</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -508,13 +527,13 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 </tr>
 </tbody>
 </table>
-<h4 id="args"><a class="toclink" href="#args">args</a><a class="headerlink" href="#args" title="Permanent link">&para;</a></h4>
+<h3 id="args"><a class="toclink" href="#args">args</a><a class="headerlink" href="#args" title="Permanent link">&para;</a></h3>
 <p>打印函数参数。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] args [-v] [&lt;regex&gt;]
 </code></pre>
 
 <p>如果指定了regex，只有名称与之匹配的函数参数才会被返回。如果指定了-v，将显示每个函数参数的更多信息。</p>
-<h4 id="break"><a class="toclink" href="#break">break</a><a class="headerlink" href="#break" title="Permanent link">&para;</a></h4>
+<h3 id="break"><a class="toclink" href="#break">break</a><a class="headerlink" href="#break" title="Permanent link">&para;</a></h3>
 <p>设置断点。</p>
 <pre class="codehilite"><code>break [name] &lt;linespec&gt;
 </code></pre>
@@ -522,10 +541,10 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
 <p>参见<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md">Documentation/cli/locspec.md</a>了解linespec的语法。</p>
 <p>也请参见：”help on“、“help cond”和“help clear”。</p>
 <p>别名: b</p>
-<h4 id="breakpoints"><a class="toclink" href="#breakpoints">breakpoints</a><a class="headerlink" href="#breakpoints" title="Permanent link">&para;</a></h4>
+<h3 id="breakpoints"><a class="toclink" href="#breakpoints">breakpoints</a><a class="headerlink" href="#breakpoints" title="Permanent link">&para;</a></h3>
 <p>打印出生效断点的信息。</p>
 <p>别名: bp</p>
-<h4 id="call"><a class="toclink" href="#call">call</a><a class="headerlink" href="#call" title="Permanent link">&para;</a></h4>
+<h3 id="call"><a class="toclink" href="#call">call</a><a class="headerlink" href="#call" title="Permanent link">&para;</a></h3>
 <p>恢复进程，注入一个函数调用（实验性的！！！）</p>
 <pre class="highlight"><code>call [-unsafe] &lt;function call expression&gt;</code></pre>
 <p>当前限制:
@@ -538,34 +557,34 @@ Breakpoint 1 set at 0x536513 for /home/me/go/src/github.com/me/foo/pkg/baz/test.
   point.
 - 调用一个函数将恢复所有goroutine的执行。
 - 只支持Linux的本地后端.</p>
-<h4 id="check"><a class="toclink" href="#check">check</a><a class="headerlink" href="#check" title="Permanent link">&para;</a></h4>
+<h3 id="check"><a class="toclink" href="#check">check</a><a class="headerlink" href="#check" title="Permanent link">&para;</a></h3>
 <p>在当前位置创建一个检查点。</p>
 <pre class="codehilite"><code>checkpoint [note]
 </code></pre>
 
 <p>”note“是任意的文本，可用于标识检查点，如果没有指明，则默认为”filename:line position”。</p>
 <p>别名: checkpoint</p>
-<h4 id="checkpoints"><a class="toclink" href="#checkpoints">checkpoints</a><a class="headerlink" href="#checkpoints" title="Permanent link">&para;</a></h4>
+<h3 id="checkpoints"><a class="toclink" href="#checkpoints">checkpoints</a><a class="headerlink" href="#checkpoints" title="Permanent link">&para;</a></h3>
 <p>打印出现有检查点的信息。</p>
-<h4 id="clear"><a class="toclink" href="#clear">clear</a><a class="headerlink" href="#clear" title="Permanent link">&para;</a></h4>
+<h3 id="clear"><a class="toclink" href="#clear">clear</a><a class="headerlink" href="#clear" title="Permanent link">&para;</a></h3>
 <p>删除断点。</p>
 <pre class="codehilite"><code>clear &lt;breakpoint name or id&gt;
 </code></pre>
 
-<h4 id="clear-checkpoint"><a class="toclink" href="#clear-checkpoint">clear-checkpoint</a><a class="headerlink" href="#clear-checkpoint" title="Permanent link">&para;</a></h4>
+<h3 id="clear-checkpoint"><a class="toclink" href="#clear-checkpoint">clear-checkpoint</a><a class="headerlink" href="#clear-checkpoint" title="Permanent link">&para;</a></h3>
 <p>删除检查点。</p>
 <pre class="codehilite"><code>clear-checkpoint &lt;id&gt;
 </code></pre>
 
 <p>別名: clearcheck</p>
-<h4 id="clearall"><a class="toclink" href="#clearall">clearall</a><a class="headerlink" href="#clearall" title="Permanent link">&para;</a></h4>
+<h3 id="clearall"><a class="toclink" href="#clearall">clearall</a><a class="headerlink" href="#clearall" title="Permanent link">&para;</a></h3>
 <p>删除多个断点。</p>
 <pre class="codehilite"><code>clearall [&lt;linespec&gt;]
 </code></pre>
 
 <p>If called with the linespec argument it will delete all the breakpoints matching the linespec. If linespec is omitted all breakpoints are deleted.</p>
 <p>如果调用指定linespec参数，它将删除所有与linespec匹配的断点。如果省略linespec，则所有断点都会被删除。</p>
-<h4 id="condition"><a class="toclink" href="#condition">condition</a><a class="headerlink" href="#condition" title="Permanent link">&para;</a></h4>
+<h3 id="condition"><a class="toclink" href="#condition">condition</a><a class="headerlink" href="#condition" title="Permanent link">&para;</a></h3>
 <p>设置断点条件。</p>
 <pre class="codehilite"><code>condition &lt;breakpoint name or id&gt; &lt;boolean expression&gt;.
 condition -hitcount &lt;breakpoint name or id&gt; &lt;operator&gt; &lt;argument&gt;
@@ -584,7 +603,7 @@ condition -hitcount bp % n
 
 <p>“% n”形式意味着当hitcount是n的倍数时，我们应该在断点处停止。</p>
 <p>别名: cond</p>
-<h4 id="config"><a class="toclink" href="#config">config</a><a class="headerlink" href="#config" title="Permanent link">&para;</a></h4>
+<h3 id="config"><a class="toclink" href="#config">config</a><a class="headerlink" href="#config" title="Permanent link">&para;</a></h3>
 <p>改变配置参数。</p>
 <pre class="codehilite"><code>config -list
 </code></pre>
@@ -608,7 +627,7 @@ config alias &lt;alias&gt;
 </code></pre>
 
 <p>将<alias>定义为<command>的别名或删除一个别名。</p>
-<h4 id="continue"><a class="toclink" href="#continue">continue</a><a class="headerlink" href="#continue" title="Permanent link">&para;</a></h4>
+<h3 id="continue"><a class="toclink" href="#continue">continue</a><a class="headerlink" href="#continue" title="Permanent link">&para;</a></h3>
 <p>运行至断点或程序终止。</p>
 <pre class="codehilite"><code>continue [&lt;linespec&gt;]
 </code></pre>
@@ -621,13 +640,13 @@ continue encoding/json.Marshal
 </code></pre>
 
 <p>别名: c</p>
-<h4 id="deferred"><a class="toclink" href="#deferred">deferred</a><a class="headerlink" href="#deferred" title="Permanent link">&para;</a></h4>
+<h3 id="deferred"><a class="toclink" href="#deferred">deferred</a><a class="headerlink" href="#deferred" title="Permanent link">&para;</a></h3>
 <p>在一个延迟调用的上下文中执行命令。</p>
 <pre class="codehilite"><code>deferred &lt;n&gt; &lt;command&gt;
 </code></pre>
 
 <p>在当前帧中第n个延迟调用的上下文中执行指定的命令（print, args, locals）。</p>
-<h4 id="disassemble"><a class="toclink" href="#disassemble">disassemble</a><a class="headerlink" href="#disassemble" title="Permanent link">&para;</a></h4>
+<h3 id="disassemble"><a class="toclink" href="#disassemble">disassemble</a><a class="headerlink" href="#disassemble" title="Permanent link">&para;</a></h3>
 <p>反汇编。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] disassemble [-a &lt;start&gt; &lt;end&gt;] [-l &lt;locspec&gt;]
 </code></pre>
@@ -638,7 +657,7 @@ continue encoding/json.Marshal
 </code></pre>
 
 <p>别名: disass</p>
-<h4 id="display"><a class="toclink" href="#display">display</a><a class="headerlink" href="#display" title="Permanent link">&para;</a></h4>
+<h3 id="display"><a class="toclink" href="#display">display</a><a class="headerlink" href="#display" title="Permanent link">&para;</a></h3>
 <p>每次程序停止时，打印表达式的值。</p>
 <pre class="codehilite"><code>display -a [%format] &lt;expression&gt;
 display -d &lt;number&gt;
@@ -646,27 +665,27 @@ display -d &lt;number&gt;
 
 <p>选项'-a'将一个表达式添加到每次程序停止时打印的表达式列表中。选项'-d'从列表中删除指定的表达式。</p>
 <p>如果在没有参数的情况下调用display，它将打印列表中所有表达式的值。</p>
-<h4 id="down"><a class="toclink" href="#down">down</a><a class="headerlink" href="#down" title="Permanent link">&para;</a></h4>
+<h3 id="down"><a class="toclink" href="#down">down</a><a class="headerlink" href="#down" title="Permanent link">&para;</a></h3>
 <p>将当前帧向下移动。</p>
 <pre class="codehilite"><code>down [&lt;m&gt;]
 down [&lt;m&gt;] &lt;command&gt;
 </code></pre>
 
 <p>将当前帧向下移动<m>。第二种形式是在给定的帧上运行该命令。</p>
-<h4 id="dump"><a class="toclink" href="#dump">dump</a><a class="headerlink" href="#dump" title="Permanent link">&para;</a></h4>
+<h3 id="dump"><a class="toclink" href="#dump">dump</a><a class="headerlink" href="#dump" title="Permanent link">&para;</a></h3>
 <p>从当前进程状态创建一个核心转储。</p>
 <pre class="codehilite"><code>dump &lt;output file&gt;
 </code></pre>
 
 <p>核心转储总是用ELF写的，即使是在不习惯这样做的系统上（windows, macOS）。对于linux/amd64以外的环境，线程和寄存器的转储格式只有Delve可以读回。</p>
-<h4 id="edit"><a class="toclink" href="#edit">edit</a><a class="headerlink" href="#edit" title="Permanent link">&para;</a></h4>
+<h3 id="edit"><a class="toclink" href="#edit">edit</a><a class="headerlink" href="#edit" title="Permanent link">&para;</a></h3>
 <p>Open where you are in $DELVE_EDITOR or $EDITOR</p>
 <pre class="codehilite"><code>edit [locspec]
 </code></pre>
 
 <p>如果省略locspec，edit将在编辑器中打开当前的源文件，否则它将打开指定的位置。</p>
 <p>别名: ed</p>
-<h4 id="examinemem"><a class="toclink" href="#examinemem">examinemem</a><a class="headerlink" href="#examinemem" title="Permanent link">&para;</a></h4>
+<h3 id="examinemem"><a class="toclink" href="#examinemem">examinemem</a><a class="headerlink" href="#examinemem" title="Permanent link">&para;</a></h3>
 <p>查看内存：</p>
 <pre class="codehilite"><code>examinemem [-fmt &lt;format&gt;] [-count|-len &lt;count&gt;] [-size &lt;size&gt;] &lt;address&gt;
 examinemem [-fmt &lt;format&gt;] [-count|-len &lt;count&gt;] [-size &lt;size&gt;] -x &lt;expression&gt;
@@ -684,24 +703,24 @@ x -fmt hex -count 20 -size 1 -x myPtrVar
 </code></pre>
 
 <p>别名: x</p>
-<h4 id="exit"><a class="toclink" href="#exit">exit</a><a class="headerlink" href="#exit" title="Permanent link">&para;</a></h4>
+<h3 id="exit"><a class="toclink" href="#exit">exit</a><a class="headerlink" href="#exit" title="Permanent link">&para;</a></h3>
 <p>退出调试。</p>
 <pre class="highlight"><code>exit [-c]</code></pre>
 <p>当连接到一个用--accept-multiclient启动的<code>headless</code>实例时，在断开连接前通过-c来恢复目标进程的执行。</p>
 <p>别名：quit q</p>
-<h4 id="frame"><a class="toclink" href="#frame">frame</a><a class="headerlink" href="#frame" title="Permanent link">&para;</a></h4>
+<h3 id="frame"><a class="toclink" href="#frame">frame</a><a class="headerlink" href="#frame" title="Permanent link">&para;</a></h3>
 <p>设置当前帧，或在不同的帧上执行命令。</p>
 <pre class="codehilite"><code>frame &lt;m&gt;                   # 设置帧
 frame &lt;m&gt; &lt;command&gt;         # 在给定帧上执行命令
 </code></pre>
 
-<h4 id="funcs"><a class="toclink" href="#funcs">funcs</a><a class="headerlink" href="#funcs" title="Permanent link">&para;</a></h4>
+<h3 id="funcs"><a class="toclink" href="#funcs">funcs</a><a class="headerlink" href="#funcs" title="Permanent link">&para;</a></h3>
 <p>打印函数列表</p>
 <pre class="codehilite"><code>funcs [&lt;regex&gt;]
 </code></pre>
 
 <p>如果指定了regex，只有与之匹配的函数才会被返回。</p>
-<h4 id="goroutine_1"><a class="toclink" href="#goroutine_1">goroutine</a><a class="headerlink" href="#goroutine_1" title="Permanent link">&para;</a></h4>
+<h3 id="goroutine_1"><a class="toclink" href="#goroutine_1">goroutine</a><a class="headerlink" href="#goroutine_1" title="Permanent link">&para;</a></h3>
 <p>显示或改变当前的Goroutine。</p>
 <pre class="codehilite"><code>goroutine
 goroutine &lt;id&gt;
@@ -712,7 +731,7 @@ goroutine &lt;id&gt; &lt;command&gt;
 用一个参数调用，它将切换到指定的goroutine。
 用更多的参数调用，它将在指定的goroutine上执行一个命令。</p>
 <p>别名：gr</p>
-<h4 id="goroutines"><a class="toclink" href="#goroutines">goroutines</a><a class="headerlink" href="#goroutines" title="Permanent link">&para;</a></h4>
+<h3 id="goroutines"><a class="toclink" href="#goroutines">goroutines</a><a class="headerlink" href="#goroutines" title="Permanent link">&para;</a></h3>
 <p>列出程序goroutines。</p>
 <pre class="codehilite"><code>goroutines [-u (default: user location)|-r (runtime location)|-g (go statement location)|-s (start location)] [-t (stack trace)] [-l (labels)]
 </code></pre>
@@ -728,15 +747,15 @@ goroutine &lt;id&gt; &lt;command&gt;
 
 <p>如果没有指定标志，默认为-u。</p>
 <p>别名：grs</p>
-<h4 id="help"><a class="toclink" href="#help">help</a><a class="headerlink" href="#help" title="Permanent link">&para;</a></h4>
+<h3 id="help"><a class="toclink" href="#help">help</a><a class="headerlink" href="#help" title="Permanent link">&para;</a></h3>
 <p>打印帮助信息。</p>
 <pre class="codehilite"><code>help [command]
 </code></pre>
 
 <p>键入 "help"，并加上命令名，以获得更多相关信息。</p>
-<h4 id="libraries"><a class="toclink" href="#libraries">libraries</a><a class="headerlink" href="#libraries" title="Permanent link">&para;</a></h4>
+<h3 id="libraries"><a class="toclink" href="#libraries">libraries</a><a class="headerlink" href="#libraries" title="Permanent link">&para;</a></h3>
 <p>列出已加载的动态库。</p>
-<h4 id="list"><a class="toclink" href="#list">list</a><a class="headerlink" href="#list" title="Permanent link">&para;</a></h4>
+<h3 id="list"><a class="toclink" href="#list">list</a><a class="headerlink" href="#list" title="Permanent link">&para;</a></h3>
 <p>查看源码。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] list [&lt;linespec&gt;]
 </code></pre>
@@ -750,27 +769,27 @@ list 40
 </code></pre>
 
 <p>别名: ls l</p>
-<h4 id="locals"><a class="toclink" href="#locals">locals</a><a class="headerlink" href="#locals" title="Permanent link">&para;</a></h4>
+<h3 id="locals"><a class="toclink" href="#locals">locals</a><a class="headerlink" href="#locals" title="Permanent link">&para;</a></h3>
 <p>打印局部变量。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] locals [-v] [&lt;regex&gt;]
 </code></pre>
 
 <p>The name of variables that are shadowed in the current scope will be shown in parenthesis.</p>
 <p>如果指定了regex，只有名称与之匹配的局部变量才会被返回。如果指定了-v，将显示每个局部变量的更多信息。</p>
-<h4 id="next"><a class="toclink" href="#next">next</a><a class="headerlink" href="#next" title="Permanent link">&para;</a></h4>
+<h3 id="next"><a class="toclink" href="#next">next</a><a class="headerlink" href="#next" title="Permanent link">&para;</a></h3>
 <p>走到下一个代码行。</p>
 <pre class="codehilite"><code>next [count]
 </code></pre>
 
 <p>可选的[count]参数允许跳过多行。</p>
 <p>别名：n</p>
-<h4 id="on"><a class="toclink" href="#on">on</a><a class="headerlink" href="#on" title="Permanent link">&para;</a></h4>
+<h3 id="on"><a class="toclink" href="#on">on</a><a class="headerlink" href="#on" title="Permanent link">&para;</a></h3>
 <p>当断点命中，执行一个命令。</p>
 <pre class="codehilite"><code>on &lt;breakpoint name or id&gt; &lt;command&gt;.
 </code></pre>
 
 <p>支持的命令：（print、stack and goroutine）</p>
-<h4 id="print"><a class="toclink" href="#print">print</a><a class="headerlink" href="#print" title="Permanent link">&para;</a></h4>
+<h3 id="print"><a class="toclink" href="#print">print</a><a class="headerlink" href="#print" title="Permanent link">&para;</a></h3>
 <p>打印表达式值</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] print [%format] &lt;expression&gt;
 </code></pre>
@@ -778,15 +797,15 @@ list 40
 <p>关于支持的表达式的描述，请参见<a href="https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md">Documentation/cli/expr.md</a>。</p>
 <p>可选的<code>format</code>参数是一个格式指定符，就像<code>fmt</code>包所使用的那样。例如，"print %x v "将把v打印成一个十六进制的数字。</p>
 <p>别名：p</p>
-<h4 id="rebuild"><a class="toclink" href="#rebuild">rebuild</a><a class="headerlink" href="#rebuild" title="Permanent link">&para;</a></h4>
+<h3 id="rebuild"><a class="toclink" href="#rebuild">rebuild</a><a class="headerlink" href="#rebuild" title="Permanent link">&para;</a></h3>
 <p>重建目标可执行文件并重新启动它。如果该可执行文件不是由delve构建的，它就不起作用。</p>
-<h4 id="regs"><a class="toclink" href="#regs">regs</a><a class="headerlink" href="#regs" title="Permanent link">&para;</a></h4>
+<h3 id="regs"><a class="toclink" href="#regs">regs</a><a class="headerlink" href="#regs" title="Permanent link">&para;</a></h3>
 <p>打印CPU寄存器的内容。</p>
 <pre class="codehilite"><code>regs [-a]
 </code></pre>
 
 <p>参数-a显示更多的寄存器。单个寄存器也可以通过“print”和“display”来显示。参见<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/expr.md.">Documentation/cli/expr.md.</a></p>
-<h4 id="restart"><a class="toclink" href="#restart">restart</a><a class="headerlink" href="#restart" title="Permanent link">&para;</a></h4>
+<h3 id="restart"><a class="toclink" href="#restart">restart</a><a class="headerlink" href="#restart" title="Permanent link">&para;</a></h3>
 <p>重启进程。</p>
 <p>For recorded targets the command takes the following forms:</p>
 <pre class="codehilite"><code>restart                 resets to the start of the recording
@@ -807,26 +826,26 @@ restart -r [newargv...] [redirects...]  re-records the target process
 </code></pre>
 
 <p>别名：r</p>
-<h4 id="set"><a class="toclink" href="#set">set</a><a class="headerlink" href="#set" title="Permanent link">&para;</a></h4>
+<h3 id="set"><a class="toclink" href="#set">set</a><a class="headerlink" href="#set" title="Permanent link">&para;</a></h3>
 <p>改变变量的值。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] set &lt;variable&gt; = &lt;value&gt;
 </code></pre>
 
 <p>关于支持的表达式的描述，请参见<a href="https://github.com/go-delve/delve/tree/master/Documentation/cli/expr.md">Documentation/cli/expr.md</a>。只有数字型变量和指针可以被改变。</p>
-<h4 id="source"><a class="toclink" href="#source">source</a><a class="headerlink" href="#source" title="Permanent link">&para;</a></h4>
+<h3 id="source"><a class="toclink" href="#source">source</a><a class="headerlink" href="#source" title="Permanent link">&para;</a></h3>
 <p>执行一个包含delve命令列表的文件。</p>
 <pre class="codehilite"><code>source &lt;path&gt;
 </code></pre>
 
 <p>如果<code>path</code>以.star扩展名结尾，它将被解释为一个starlark脚本。语法见 <a href="//github.com/go-delve/telve/master/Documentation/cli/starlark.md">Documentation/cli/starlark.md</a>。</p>
 <p>如果<code>path</code>是一个单一的’-‘字符，一个交互式的starlark解释器将被启动。键入”exit“来退出。</p>
-<h4 id="sources"><a class="toclink" href="#sources">sources</a><a class="headerlink" href="#sources" title="Permanent link">&para;</a></h4>
+<h3 id="sources"><a class="toclink" href="#sources">sources</a><a class="headerlink" href="#sources" title="Permanent link">&para;</a></h3>
 <p>打印源文件的清单。</p>
 <pre class="codehilite"><code>sources [&lt;regex&gt;]
 </code></pre>
 
 <p>如果指定了regex，只有与之匹配的源文件才会被返回。</p>
-<h4 id="stack"><a class="toclink" href="#stack">stack</a><a class="headerlink" href="#stack" title="Permanent link">&para;</a></h4>
+<h3 id="stack"><a class="toclink" href="#stack">stack</a><a class="headerlink" href="#stack" title="Permanent link">&para;</a></h3>
 <p>打印堆栈跟踪。</p>
 <pre class="codehilite"><code>[goroutine &lt;n&gt;] [frame &lt;m&gt;] stack [&lt;depth&gt;] [-full] [-offsets] [-defer] [-a &lt;n&gt;] [-adepth &lt;depth&gt;] [-mode &lt;mode&gt;]
 
@@ -842,27 +861,27 @@ restart -r [newargv...] [redirects...]  re-records the target process
 </code></pre>
 
 <p>别名：bt</p>
-<h4 id="step"><a class="toclink" href="#step">step</a><a class="headerlink" href="#step" title="Permanent link">&para;</a></h4>
+<h3 id="step"><a class="toclink" href="#step">step</a><a class="headerlink" href="#step" title="Permanent link">&para;</a></h3>
 <p>单步执行程序</p>
 <p>别名：s</p>
-<h4 id="step-instruction"><a class="toclink" href="#step-instruction">step-instruction</a><a class="headerlink" href="#step-instruction" title="Permanent link">&para;</a></h4>
+<h3 id="step-instruction"><a class="toclink" href="#step-instruction">step-instruction</a><a class="headerlink" href="#step-instruction" title="Permanent link">&para;</a></h3>
 <p>单步执行cpu指令</p>
 <p>别名：si</p>
-<h4 id="stepout"><a class="toclink" href="#stepout">stepout</a><a class="headerlink" href="#stepout" title="Permanent link">&para;</a></h4>
+<h3 id="stepout"><a class="toclink" href="#stepout">stepout</a><a class="headerlink" href="#stepout" title="Permanent link">&para;</a></h3>
 <p>走出当前函数</p>
 <p>别名：so</p>
-<h4 id="thread"><a class="toclink" href="#thread">thread</a><a class="headerlink" href="#thread" title="Permanent link">&para;</a></h4>
+<h3 id="thread"><a class="toclink" href="#thread">thread</a><a class="headerlink" href="#thread" title="Permanent link">&para;</a></h3>
 <p>切换到指定的线程。</p>
 <pre class="codehilite"><code>thread &lt;id&gt;
 </code></pre>
 
 <p>别名：tr</p>
-<h4 id="threads"><a class="toclink" href="#threads">threads</a><a class="headerlink" href="#threads" title="Permanent link">&para;</a></h4>
+<h3 id="threads"><a class="toclink" href="#threads">threads</a><a class="headerlink" href="#threads" title="Permanent link">&para;</a></h3>
 <p>打印出每个被追踪线程的信息。</p>
-<h4 id="toggle"><a class="toclink" href="#toggle">toggle</a><a class="headerlink" href="#toggle" title="Permanent link">&para;</a></h4>
+<h3 id="toggle"><a class="toclink" href="#toggle">toggle</a><a class="headerlink" href="#toggle" title="Permanent link">&para;</a></h3>
 <p>打开或关闭一个断点。</p>
 <pre class="highlight"><code>toggle &lt;breakpoint name or id&gt;</code></pre>
-<h4 id="trace"><a class="toclink" href="#trace">trace</a><a class="headerlink" href="#trace" title="Permanent link">&para;</a></h4>
+<h3 id="trace"><a class="toclink" href="#trace">trace</a><a class="headerlink" href="#trace" title="Permanent link">&para;</a></h3>
 <p>设置跟踪点。</p>
 <pre class="codehilite"><code>trace [name] &lt;linespec&gt;
 </code></pre>
@@ -870,25 +889,25 @@ restart -r [newargv...] [redirects...]  re-records the target process
 <p>跟踪点是一个不会停止程序执行的断点，相反，当跟踪点被击中时，会显示一个通知。请参阅<a href="//github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md">Documentation/cli/locspec.md</a>了解linespec的语法。</p>
 <p>也请参见: "help on", "help cond" and "help clear"</p>
 <p>别名：t</p>
-<h4 id="types"><a class="toclink" href="#types">types</a><a class="headerlink" href="#types" title="Permanent link">&para;</a></h4>
+<h3 id="types"><a class="toclink" href="#types">types</a><a class="headerlink" href="#types" title="Permanent link">&para;</a></h3>
 <p>打印类型列表。</p>
 <pre class="codehilite"><code>types [&lt;regex&gt;]
 </code></pre>
 
 <p>如果指定了regex，只有与之匹配的类型才会被返回。</p>
-<h4 id="up"><a class="toclink" href="#up">up</a><a class="headerlink" href="#up" title="Permanent link">&para;</a></h4>
+<h3 id="up"><a class="toclink" href="#up">up</a><a class="headerlink" href="#up" title="Permanent link">&para;</a></h3>
 <p>将当前帧向上移动。</p>
 <pre class="codehilite"><code>up [&lt;m&gt;]                # 将当前帧向上移动&lt;m&gt;
 up [&lt;m&gt;] &lt;command&gt;      # 在给定的帧上运行该命令
 </code></pre>
 
-<h4 id="vars"><a class="toclink" href="#vars">vars</a><a class="headerlink" href="#vars" title="Permanent link">&para;</a></h4>
+<h3 id="vars"><a class="toclink" href="#vars">vars</a><a class="headerlink" href="#vars" title="Permanent link">&para;</a></h3>
 <p>打印包变量。</p>
 <pre class="codehilite"><code>vars [-v] [&lt;regex&gt;]
 </code></pre>
 
 <p>如果指定了regex，只有名称与之匹配的包变量才会被返回。如果指定了-v，将显示关于每个包变量的更多信息。</p>
-<h4 id="watch"><a class="toclink" href="#watch">watch</a><a class="headerlink" href="#watch" title="Permanent link">&para;</a></h4>
+<h3 id="watch"><a class="toclink" href="#watch">watch</a><a class="headerlink" href="#watch" title="Permanent link">&para;</a></h3>
 <p>设置观察点。</p>
 <pre class="highlight"><code>watch [-r|-w|-rw] &lt;expr&gt;
 
@@ -901,13 +920,13 @@ up [&lt;m&gt;] &lt;command&gt;      # 在给定的帧上运行该命令
 
 <p>将观察变量”v“的地址。</p>
 <p>参考: "help print".</p>
-<h4 id="whatis"><a class="toclink" href="#whatis">whatis</a><a class="headerlink" href="#whatis" title="Permanent link">&para;</a></h4>
+<h3 id="whatis"><a class="toclink" href="#whatis">whatis</a><a class="headerlink" href="#whatis" title="Permanent link">&para;</a></h3>
 <p>打印表达式的类型。</p>
 <pre class="codehilite"><code>whatis &lt;expression&gt;
 </code></pre>
 
-<h3 id="_11"><a class="toclink" href="#_11">常见问题</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
-<h4 id="dockerdlv"><a class="toclink" href="#dockerdlv">如何在docker中使用dlv</a><a class="headerlink" href="#dockerdlv" title="Permanent link">&para;</a></h4>
+<h2 id="_11"><a class="toclink" href="#_11">常见问题</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h3 id="dockerdlv"><a class="toclink" href="#dockerdlv">如何在docker中使用dlv</a><a class="headerlink" href="#dockerdlv" title="Permanent link">&para;</a></h3>
 <p>启动docker容器时，增加参数<code>--security-opt=seccomp:unconfined</code>。</p>
 <p>你可以像这样在容器内启动一个Delve的<code>headless</code>实例:</p>
 <pre class="highlight"><code class="language-bash">$ dlv exec --headless --listen :4040 /path/to/executable</code></pre>
@@ -916,13 +935,13 @@ up [&lt;m&gt;] &lt;command&gt;      # 在给定的帧上运行该命令
 <p>程序不会开始执行，直到你连接到Delve并发送<code>continue</code>命令。 如果你想让程序立即开始，你可以通过向Delve传递<code>--continue</code>和<code>--accept-multiclient</code>选项来实现:</p>
 <pre class="highlight"><code class="language-bash">$ dlv exec --headless --continue --listen :4040 --accept-multiclient /path/to/executable</code></pre>
 <p>注意，与Delve的连接是未经认证的，将允许任意的远程代码执行。<em>请不要在生产中这样做</em>。</p>
-<h4 id="delvecli"><a class="toclink" href="#delvecli">如何使用Delve来调试CLI应用程序</a><a class="headerlink" href="#delvecli" title="Permanent link">&para;</a></h4>
+<h3 id="delvecli"><a class="toclink" href="#delvecli">如何使用Delve来调试CLI应用程序</a><a class="headerlink" href="#delvecli" title="Permanent link">&para;</a></h3>
 <ol>
 <li>在一个单独的终端中运行你的CLI应用程序，然后通过<code>dlv attach</code>调试。</li>
 <li>通过<code>dlv debug --headless</code>在<code>headless</code>模式下运行Delve，然后从另一个终端连接到它。这将使该进程处于前台，并允许它访问终端TTY。</li>
 <li>为进程指定它自己的TTY。这在UNIX系统上可以使用<code>dlv debug</code>和<code>dlv exec</code>命令通过<code>--tty</code>标志来实现。为了获得最好的体验，你应该创建你自己的PTY并将其指定为TTY。这可以通过<a href="https://github.com/derekparker/ptyme">ptyme</a>完成。</li>
 </ol>
-<h4 id="dlv_1"><a class="toclink" href="#dlv_1">如何使用dlv进行远程调试</a><a class="headerlink" href="#dlv_1" title="Permanent link">&para;</a></h4>
+<h3 id="dlv_1"><a class="toclink" href="#dlv_1">如何使用dlv进行远程调试</a><a class="headerlink" href="#dlv_1" title="Permanent link">&para;</a></h3>
 <p>建议最好不要在公网上使用远程调试。如果你必须远程调试，我们建议使用ssh隧道或者VPN连接。</p>
 <p><strong>示例</strong> </p>
 <p>远程服务端:</p>
@@ -934,7 +953,7 @@ up [&lt;m&gt;] &lt;command&gt;      # 在给定的帧上运行该命令
 <li>连接本地端口
 <pre class="highlight"><code class="language-bash">$ dlv connect :4040</code></pre></li>
 </ol>
-<h3 id="_12"><a class="toclink" href="#_12">参考文章</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<h2 id="_12"><a class="toclink" href="#_12">参考文章</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv.md">delve usage</a></p>
 <p><a href="https://github.com/go-delve/delve/blob/master/Documentation/cli/README.md">Command line client</a></p>
 <p><a href="https://github.com/go-delve/delve/blob/master/Documentation/cli/getting_started.md">Getting Started</a></p>
